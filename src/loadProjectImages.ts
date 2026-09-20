@@ -4,17 +4,20 @@ import type { ProjectImage } from "./Gallery";
 function filenamesFromGlob(
   modules: Record<string, unknown>,
   preferredOrder: string[] = [],
-): string[] {
-  const files = Object.keys(modules)
-    .map((path) => path.split(/[/\\]/).pop() ?? "")
-    .filter(Boolean);
+): { file: string; src: string }[] {
+  const files = Object.entries(modules)
+    .map(([path, source]) => ({
+      file: path.split(/[/\\]/).pop() ?? "",
+      src: typeof source === "string" ? source : "",
+    }))
+    .filter(({ file, src }) => file && src);
   return files.sort((a, b) => {
-    const ia = preferredOrder.indexOf(a);
-    const ib = preferredOrder.indexOf(b);
+    const ia = preferredOrder.indexOf(a.file);
+    const ib = preferredOrder.indexOf(b.file);
     const ra = ia === -1 ? Number.MAX_SAFE_INTEGER : ia;
     const rb = ib === -1 ? Number.MAX_SAFE_INTEGER : ib;
     if (ra !== rb) return ra - rb;
-    return a.localeCompare(b, undefined, {
+    return a.file.localeCompare(b.file, undefined, {
       numeric: true,
       sensitivity: "base",
     });
@@ -22,8 +25,8 @@ function filenamesFromGlob(
 }
 
 /**
- * Build gallery entries from a public/projects/<id>/ folder.
- * Drop new screenshots into the folder — they appear automatically on next build/dev.
+ * Build gallery entries from a src/assets/projects/<id>/ folder.
+ * Drop new screenshots into the folder — Vite emits and fingerprints them automatically.
  * Optional `titles` map customizes captions by filename; others get序号标题.
  * Optional `order` pins known files first; remaining files follow natural sort.
  */
@@ -34,8 +37,8 @@ export function projectImagesFromGlob(
   titles: Record<string, string> = {},
   order: string[] = [],
 ): ProjectImage[] {
-  return filenamesFromGlob(modules, order).map((file, index) => ({
-    src: `${folder}/${file}`,
+  return filenamesFromGlob(modules, order).map(({ file, src }, index) => ({
+    src: src || `${folder}/${file}`,
     title:
       titles[file] ??
       `${label} · 界面截图 ${String(index + 1).padStart(2, "0")}`,

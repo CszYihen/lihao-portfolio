@@ -8,7 +8,12 @@ export type ProjectImage = {
   title: string;
   kind: "screenshot" | "diagram";
 };
-const asset = (src: string) => `${import.meta.env.BASE_URL}${src}`;
+const asset = (src: string) =>
+  /^(?:https?:)?\/\//.test(src) ||
+  src.startsWith("/") ||
+  src.startsWith("data:")
+    ? src
+    : `${import.meta.env.BASE_URL}${src}`;
 
 /** Image-only project gallery (Inspira Animated Testimonials stack). */
 export function ProjectGallery({
@@ -286,8 +291,8 @@ export function Lightbox({
           ))}
         </div>
         <p className="lightbox-help">
-          ← → 切换图片 <span>·</span> ESC 关闭 <span>·</span>{" "}
-          悬停放大镜查看细节 <span>·</span> 点击 + 全幅放大
+          ← → 切换图片 <span>·</span> ESC 关闭 <span>·</span> 悬停放大镜查看细节{" "}
+          <span>·</span> 点击 + 全幅放大
         </p>
       </div>
     </motion.div>

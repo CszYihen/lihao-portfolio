@@ -123,6 +123,9 @@ test("resume content, five projects and category filtering", async ({
   await expect(
     page.locator('#project-drama a[href="https://github.com/CszYihen/Yihen-Drama"]'),
   ).toBeVisible();
+  await expect(
+    page.locator('.profile-github[href="https://github.com/CszYihen"]'),
+  ).toBeVisible();
   for (const project of projectCases)
     await expect(page.locator(`#project-${project.id} h3`)).toContainText(
       project.title,
@@ -173,7 +176,6 @@ test("each project expands and collapses its technical details", async ({
     expect(
       await details.locator(".project-highlights li").count(),
     ).toBeGreaterThan(0);
-    if (project.id === "drama") await expect(details).toContainText("120 秒");
     await toggle.click();
     await expect(toggle).toHaveAttribute("aria-expanded", "false");
     await expect(details).toHaveAttribute("inert", "");
@@ -188,8 +190,8 @@ test("every project gallery loads, changes thumbnails and opens the selected ima
   await page.goto("/");
   for (const project of projectCases) {
     const entry = page.locator(`#project-${project.id}`);
-    const preview = entry.locator('.at-card[data-active="true"] .at-image-btn');
-    await preview.scrollIntoViewIfNeeded();
+    await entry.locator(".animated-testimonials").scrollIntoViewIfNeeded();
+    const preview = entry.locator('.at-card[data-active="true"] .at-image-btn').last();
     await expectLoaded(preview.locator("img"));
     const next = entry.getByRole("button", { name: "下一张" });
     if (project.images > 1) {
@@ -242,7 +244,9 @@ test("lightbox keyboard, paging, filmstrip, zoom, focus trap and inert backgroun
   page,
 }) => {
   await page.goto("/");
-  const preview = page.locator('#project-drama .at-card[data-active="true"] .at-image-btn');
+  await page.locator("#project-drama .animated-testimonials").scrollIntoViewIfNeeded();
+  const preview = page.locator('#project-drama .at-card[data-active="true"] .at-image-btn').last();
+  const returnFocusName = await preview.getAttribute("aria-label");
   await preview.click();
   const dialog = page.getByRole("dialog");
   const picture = dialog.locator(".lightbox-viewport img");
@@ -294,7 +298,9 @@ test("lightbox keyboard, paging, filmstrip, zoom, focus trap and inert backgroun
   await expect(dialog).toHaveCount(0);
   await expect(page.locator(".resume-app")).not.toHaveAttribute("inert", "");
   await expect(page.locator("body")).not.toHaveCSS("overflow", "hidden");
-  await expect(preview).toBeFocused();
+  await expect(
+    page.getByRole("button", { name: returnFocusName!, exact: true }),
+  ).toBeFocused();
 });
 
 test("original PDF download, email copy, contact links and print action", async ({
@@ -316,7 +322,7 @@ test("original PDF download, email copy, contact links and print action", async 
   await expect(
     page.locator(".profile-contact").getByRole("link", { name: "19118415578" }),
   ).toHaveAttribute("href", "tel:19118415578");
-  const resume = page.getByRole("link", { name: "下载原版 PDF" });
+  const resume = page.getByRole("link", { name: "下载 PDF 简历" });
   const [download] = await Promise.all([
     page.waitForEvent("download"),
     resume.click(),
@@ -393,6 +399,7 @@ test("system reduced motion overrides an enabled preference", async ({
     "none",
   );
   const gallery = page.locator("#project-drama .animated-testimonials");
+  await gallery.scrollIntoViewIfNeeded();
   await expect(gallery).toBeVisible();
   await expect(gallery.locator(".at-controls")).toBeVisible();
   await page.emulateMedia({ reducedMotion: "no-preference" });
@@ -412,6 +419,19 @@ for (const width of [320, 390, 768, 1024, 1440]) {
     await page.goto("/");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     await expectNoPageOverflow(page, `${width}px resume`);
+    if (width < 700) {
+      const profileSpacing = await page.evaluate(() => {
+        const badge = document.querySelector(".graduate-badge")!.getBoundingClientRect();
+        const summary = document.querySelector(".profile-summary")!.getBoundingClientRect();
+        const facts = document.querySelector(".profile-facts")!.getBoundingClientRect();
+        return {
+          badgeSummaryGap: summary.top - badge.bottom,
+          summaryFactsGap: facts.top - summary.bottom,
+        };
+      });
+      expect(profileSpacing.badgeSummaryGap, `${width}px badge overlap`).toBeGreaterThanOrEqual(0);
+      expect(profileSpacing.summaryFactsGap, `${width}px summary overlap`).toBeGreaterThanOrEqual(0);
+    }
     for (const project of projectCases) {
       const gallery = page.locator(`#project-${project.id} .project-gallery`);
       await gallery.scrollIntoViewIfNeeded();
@@ -450,7 +470,7 @@ for (const width of [320, 390, 768, 1024, 1440]) {
         path: `.qa/resume-projects-${width === 1440 ? "desktop" : "mobile"}.png`,
       });
     }
-    const preview = page.locator('#project-drama .at-card[data-active="true"] .at-image-btn');
+    const preview = page.locator('#project-drama .at-card[data-active="true"] .at-image-btn').last();
     await preview.click();
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible();

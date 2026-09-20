@@ -28,9 +28,7 @@ export const education = [
     major: "计算机技术",
     period: "2024 — 2027",
     current: true,
-    highlights: [
-      { label: "计算机视觉 · 行为识别", tone: "focus" as const },
-    ],
+    highlights: [{ label: "计算机视觉 · 行为识别", tone: "focus" as const }],
   },
   {
     school: "湖南理工大学",
@@ -38,9 +36,7 @@ export const education = [
     major: "计算机科学与技术",
     period: "2020 — 2024",
     current: false,
-    highlights: [
-      { label: "2024 届优秀毕业生", tone: "honor" as const },
-    ],
+    highlights: [{ label: "2024 届优秀毕业生", tone: "honor" as const }],
   },
 ];
 
@@ -103,6 +99,7 @@ export const profile = {
   company: "广州逐电科技有限公司",
   internshipRole: "Java 后端开发实习",
   internshipPeriod: "2026年4月至今",
+  github: "https://github.com/CszYihen",
   resume: `${import.meta.env.BASE_URL}resume-lihao.pdf`,
 };
 
@@ -187,8 +184,7 @@ export const projects: Project[] = [
     english: "MARITIME ALARM SYSTEM",
     category: "company",
     theme: "lime",
-    summary:
-      "船端告警采集与规则处理系统，关注事件接入、告警编排与岸基协同。",
+    summary: "船端告警采集与规则处理系统，关注事件接入、告警编排与岸基协同。",
     purpose:
       "船端侧告警处理系统。独立完成事件接入、规则判定、冷却控制与岸基上报协同等后端能力。",
     tags: ["Spring Boot", "告警规则", "GPS 轨迹", "消息协同"],

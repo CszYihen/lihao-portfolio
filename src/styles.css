@@ -1431,7 +1431,7 @@ html[data-motion="off"] .link-preview-float.is-popped {
 .at-image-btn img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center top;
   display: block;
   background: transparent;
@@ -2916,16 +2916,14 @@ html[data-motion="off"] .link-preview-float.is-popped {
     margin-top: 5px;
   }
   .graduate-badge {
-    position: absolute;
-    top: 152px;
-    left: 110px;
-    margin: 0;
+    position: static;
+    margin-top: 12px;
     font-size: 12px;
     padding: 5px 10px;
   }
   .profile-summary {
     font-size: 14px;
-    margin-top: 40px;
+    margin-top: 14px;
   }
   .profile-summary br {
     display: none;
@@ -2955,6 +2953,7 @@ html[data-motion="off"] .link-preview-float.is-popped {
     justify-content: space-between;
     gap: 12px;
     margin-top: 18px;
+    flex-wrap: wrap;
   }
   .profile-contact a {
     font-size: 13px;
@@ -2965,6 +2964,9 @@ html[data-motion="off"] .link-preview-float.is-popped {
   }
   .profile-contact a > svg {
     width: 14px;
+  }
+  .profile-contact .profile-github {
+    flex-basis: 100%;
   }
   .profile-download {
     padding: 12px 14px;
@@ -3410,8 +3412,8 @@ html[data-motion="off"] .link-preview-float.is-popped {
     padding: 21px;
   }
   .graduate-badge {
-    left: 109px;
-    top: 154px;
+    left: auto;
+    top: auto;
   }
   .profile-facts > div {
     font-size: 8px;
@@ -3420,7 +3422,7 @@ html[data-motion="off"] .link-preview-float.is-popped {
     font-size: 9px;
   }
   .profile-contact a {
-    font-size: 9px;
+    font-size: 11px;
     gap: 6px;
   }
   .profile-contact a > svg {
@@ -3622,8 +3624,8 @@ html[data-motion="off"] .link-preview-float.is-popped {
     font-size: 9px;
   }
   .graduate-badge {
-    left: 107px;
-    top: 152px;
+    left: auto;
+    top: auto;
   }
   .profile-facts {
     grid-template-columns: 1.25fr 1.2fr 0.65fr;
@@ -4281,8 +4283,13 @@ html[data-motion="off"] *:after {
   .resume-section {
     padding-top: 18px;
   }
+  .education-section {
+    break-before: page;
+    padding-top: 0;
+  }
   .section-heading {
     margin-bottom: 10px;
+    break-after: avoid-page;
   }
   .section-heading h2 {
     font-size: 13pt;
@@ -4376,7 +4383,7 @@ html[data-motion="off"] *:after {
     font-size: 7pt;
   }
   .project-entry {
-    padding: 16px 0;
+    padding: 10px 0;
     break-inside: avoid;
   }
   .project-heading h3 {
@@ -4392,7 +4399,7 @@ html[data-motion="off"] *:after {
     color: #666;
   }
   .project-tech {
-    margin: 9px 0;
+    margin: 6px 0;
   }
   .project-tech > span {
     font-size: 7pt;
@@ -4406,8 +4413,8 @@ html[data-motion="off"] *:after {
   .project-description {
     font-size: 8pt;
     color: #444;
-    line-height: 1.75;
-    margin-bottom: 9px;
+    line-height: 1.5;
+    margin-bottom: 6px;
   }
   .project-role-label {
     font-size: 8pt;
@@ -4420,11 +4427,11 @@ html[data-motion="off"] *:after {
   .project-highlights p {
     font-size: 8pt;
     color: #555;
-    line-height: 1.75;
+    line-height: 1.5;
     margin-top: 1px;
   }
   .project-highlights li {
-    margin-bottom: 6px;
+    margin-bottom: 4px;
   }
   .additional-features {
     height: auto !important;

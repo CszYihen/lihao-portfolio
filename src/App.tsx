@@ -54,7 +54,12 @@ import { projectMedia } from "./media";
 import { useSystemReducedMotion } from "./useSystemReducedMotion";
 
 const AnimationContext = createContext(true);
-const asset = (src: string) => `${import.meta.env.BASE_URL}${src}`;
+const asset = (src: string) =>
+  /^(?:https?:)?\/\//.test(src) ||
+  src.startsWith("/") ||
+  src.startsWith("data:")
+    ? src
+    : `${import.meta.env.BASE_URL}${src}`;
 const projectCover = (id: string) => {
   const cover = projectMedia[id]?.[0]?.src;
   return cover ? asset(cover) : "";
@@ -541,11 +546,11 @@ export default function App() {
                     <span />
                     2027 届 · 硕士在读
                   </div>
-                <p className="profile-summary">
-                  以 Java 为核心，关注企业侧设备物联、
-                  <br />
-                  实时业务与 AI 应用开发。
-                </p>
+                  <p className="profile-summary">
+                    以 Java 为核心，关注企业侧设备物联、
+                    <br />
+                    实时业务与 AI 应用开发。
+                  </p>
                   <div className="profile-divider" />
                   <dl className="profile-facts">
                     <div>
@@ -571,6 +576,16 @@ export default function App() {
                       <Phone size={14} />
                       <span>{profile.phone}</span>
                     </a>
+                    <a
+                      className="profile-github"
+                      href={profile.github}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <Github size={14} />
+                      <span>github.com/CszYihen</span>
+                      <ArrowUpRight size={13} />
+                    </a>
                   </div>
                   <a
                     className="profile-download"
@@ -578,7 +593,7 @@ export default function App() {
                     download="李豪-Java后端简历.pdf"
                   >
                     <FileText size={15} />
-                    <span>下载原版 PDF</span>
+                    <span>下载 PDF 简历</span>
                     <ArrowDownToLine size={15} />
                   </a>
                 </div>
@@ -665,31 +680,46 @@ export default function App() {
                   <Reveal>
                     <ul className="overview-signals" aria-label="关键信息">
                       <li>
-                        <span className="overview-signal-icon" aria-hidden="true">
+                        <span
+                          className="overview-signal-icon"
+                          aria-hidden="true"
+                        >
                           <BookOpen size={15} />
                         </span>
                         <div>
-                          <span className="overview-signal-label">学术成果</span>
+                          <span className="overview-signal-label">
+                            学术成果
+                          </span>
                           <strong>IJCAI · CCF-A</strong>
                           <span>一作会议论文</span>
                         </div>
                       </li>
                       <li>
-                        <span className="overview-signal-icon" aria-hidden="true">
+                        <span
+                          className="overview-signal-icon"
+                          aria-hidden="true"
+                        >
                           <BriefcaseBusiness size={15} />
                         </span>
                         <div>
-                          <span className="overview-signal-label">实习方向</span>
+                          <span className="overview-signal-label">
+                            实习方向
+                          </span>
                           <strong>Java 后端</strong>
                           <span>企业项目实践</span>
                         </div>
                       </li>
                       <li>
-                        <span className="overview-signal-icon" aria-hidden="true">
+                        <span
+                          className="overview-signal-icon"
+                          aria-hidden="true"
+                        >
                           <Server size={15} />
                         </span>
                         <div>
-                          <span className="overview-signal-label">项目重心</span>
+                          <span className="overview-signal-label">
+                            项目重心
+                          </span>
                           <strong>物联 · 告警 · AI</strong>
                           <span>设备到岸基协同</span>
                         </div>
@@ -887,7 +917,10 @@ export default function App() {
                           <p className="internship-role">
                             {profile.internshipRole}
                           </p>
-                          <time className="internship-period" dateTime="2026-04">
+                          <time
+                            className="internship-period"
+                            dateTime="2026-04"
+                          >
                             {profile.internshipPeriod}
                           </time>
                         </div>
@@ -897,12 +930,10 @@ export default function App() {
                           负责{" "}
                           <mark className="focus-mark">JT808 设备接入</mark>、
                           <mark className="focus-mark">告警处理与证据留存</mark>
-                          、
-                          <mark className="focus-mark">视频回放</mark>
+                          、<mark className="focus-mark">视频回放</mark>
                           等岸基能力；在复检云平台落地{" "}
                           <mark className="focus-mark">自动化大模型复检</mark>
-                          ，并支持{" "}
-                          <mark className="focus-mark">人工审核</mark>
+                          ，并支持 <mark className="focus-mark">人工审核</mark>
                           ；在 MAS 推进船端告警与船岸协同。另参与无感考勤，按{" "}
                           <mark className="focus-mark">
                             人脸 / 闸机等场景分流告警
@@ -1010,10 +1041,7 @@ export default function App() {
                   ))}
                 </div>
               </section>
-              <section
-                className="resume-section education-section"
-                id="honors"
-              >
+              <section className="resume-section education-section" id="honors">
                 <Reveal>
                   <SectionTitle
                     number="04"
