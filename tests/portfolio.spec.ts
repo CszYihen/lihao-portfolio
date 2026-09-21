@@ -151,6 +151,11 @@ test("resume content, five projects and category filtering", async ({
         .count(),
     ).toBeGreaterThanOrEqual(4);
   }
+  expect(
+    await page.locator("#project-cloud89").evaluate((entry) =>
+      getComputedStyle(entry, "::before").content,
+    ),
+  ).toBe("none");
   const filters = page.getByRole("group", { name: "项目分类" });
   await filters.getByRole("button", { name: /^个人项目/ }).click();
   await expect(page.locator(".project-entry")).toHaveCount(1);
@@ -221,6 +226,18 @@ test("every project gallery loads, changes thumbnails and opens the selected ima
     await entry.locator(".animated-testimonials").scrollIntoViewIfNeeded();
     const preview = entry.locator('.at-card[data-active="true"] .at-image-btn').last();
     await expectLoaded(preview.locator("img"));
+    await expect(preview).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+    await expect
+      .poll(() =>
+        preview.evaluate((button) => {
+          const image = button.querySelector("img")!;
+          const bounds = button.getBoundingClientRect();
+          return Math.abs(
+            image.naturalWidth / image.naturalHeight - bounds.width / bounds.height,
+          );
+        }),
+      )
+      .toBeLessThan(0.02);
     const next = entry.getByRole("button", { name: "下一张" });
     if (project.images > 1) {
       await expect(entry.locator(".at-controls .at-nav")).toHaveCount(2);
@@ -272,7 +289,9 @@ test("lightbox keyboard, paging, filmstrip, zoom, focus trap and inert backgroun
   page,
 }) => {
   await page.goto("/");
-  await page.locator("#project-drama .animated-testimonials").scrollIntoViewIfNeeded();
+  await page
+    .locator("#project-drama .animated-testimonials")
+    .evaluate((element) => element.scrollIntoView({ block: "center" }));
   const preview = page.locator('#project-drama .at-card[data-active="true"] .at-image-btn').last();
   const returnFocusName = await preview.getAttribute("aria-label");
   await preview.click();

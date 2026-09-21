@@ -755,12 +755,12 @@ export default function App() {
                         >
                           <BookOpen size={15} />
                         </span>
-                        <div>
+                        <div className="overview-signal-copy">
                           <span className="overview-signal-label">
                             学术成果
                           </span>
                           <strong>IJCAI · CCF-A</strong>
-                          <span>一作会议论文</span>
+                          <small>第一作者 · CCF-A 会议论文</small>
                         </div>
                       </li>
                       <li>
@@ -770,12 +770,12 @@ export default function App() {
                         >
                           <BriefcaseBusiness size={15} />
                         </span>
-                        <div>
+                        <div className="overview-signal-copy">
                           <span className="overview-signal-label">
                             实习方向
                           </span>
-                          <strong>Java 后端</strong>
-                          <span>企业项目实践</span>
+                          <strong>Java 后端开发</strong>
+                          <small>逐电科技 · 企业项目实践</small>
                         </div>
                       </li>
                       <li>
@@ -785,12 +785,12 @@ export default function App() {
                         >
                           <Server size={15} />
                         </span>
-                        <div>
+                        <div className="overview-signal-copy">
                           <span className="overview-signal-label">
                             项目重心
                           </span>
                           <strong>物联 · 告警 · AI</strong>
-                          <span>设备到岸基协同</span>
+                          <small>5 项项目 · 设备到岸基协同</small>
                         </div>
                       </li>
                     </ul>

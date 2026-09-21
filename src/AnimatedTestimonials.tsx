@@ -43,8 +43,10 @@ export function AnimatedTestimonials({
   const [focused, setFocused] = useState(false);
   const [pageVisible, setPageVisible] = useState(() => !document.hidden);
   const [compact, setCompact] = useState(() => window.innerWidth <= 740);
+  const [stageRatio, setStageRatio] = useState(2);
   const root = useRef<HTMLDivElement>(null);
   const timer = useRef<number | null>(null);
+  const imageRatios = useRef(new Map<string, number>());
   const count = testimonials.length;
   const canAutoplay =
     motionOn &&
@@ -124,7 +126,13 @@ export function AnimatedTestimonials({
 
   useEffect(() => {
     setActive(0);
+    setStageRatio(imageRatios.current.get(testimonials[0]?.image) ?? 2);
   }, [testimonials]);
+
+  useEffect(() => {
+    const ratio = imageRatios.current.get(testimonials[active]?.image);
+    if (ratio) setStageRatio(ratio);
+  }, [active, testimonials]);
 
   useEffect(() => {
     startTimer();
@@ -143,12 +151,18 @@ export function AnimatedTestimonials({
       }}
       onPointerLeave={() => setHovered(false)}
       onFocusCapture={() => setFocused(true)}
-      onBlurCapture={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget))
-          setFocused(false);
+      onBlurCapture={() => {
+        window.requestAnimationFrame(() => {
+          if (
+            !document.querySelector('[role="dialog"][aria-modal="true"]') &&
+            !root.current?.contains(document.activeElement)
+          ) {
+            setFocused(false);
+          }
+        });
       }}
     >
-      <div className="at-stage">
+      <div className="at-stage" style={{ aspectRatio: stageRatio }}>
         <AnimatePresence initial={false}>
           {visibleIndexes.map((index) => {
             const item = testimonials[index];
@@ -172,7 +186,7 @@ export function AnimatedTestimonials({
                   scale: isActive ? 1 : 0.94,
                   rotate: isActive ? 0 : rotates[index],
                   zIndex: isActive ? 40 : count + 2 - index,
-                  y: isActive && motionOn ? [0, -18, 0] : 0,
+                  y: isActive && motionOn ? [0, -8, 0] : 0,
                 }}
                 exit={
                   motionOn
@@ -198,6 +212,13 @@ export function AnimatedTestimonials({
                     draggable={false}
                     loading={isActive ? "eager" : "lazy"}
                     decoding="async"
+                    onLoad={(event) => {
+                      const image = event.currentTarget;
+                      if (!image.naturalWidth || !image.naturalHeight) return;
+                      const ratio = image.naturalWidth / image.naturalHeight;
+                      imageRatios.current.set(item.image, ratio);
+                      if (isActive) setStageRatio(ratio);
+                    }}
                   />
                   <span className="at-expand">
                     <Expand size={15} />
