@@ -70,6 +70,18 @@ test("resume content, five projects and category filtering", async ({
   await expect(page.locator("#experience")).toContainText(
     "广州逐电科技有限公司",
   );
+  const companyWebsite = page.getByRole("link", {
+    name: "广州逐电科技有限公司官方网站",
+  });
+  await expect(companyWebsite).toHaveAttribute(
+    "href",
+    "http://42.193.140.103:81/",
+  );
+  await expect(companyWebsite).toHaveAttribute("target", "_blank");
+  await companyWebsite.hover();
+  const companyPreview = page.locator(".link-preview-float img");
+  await expect(companyPreview).toBeVisible();
+  await expect(companyPreview).toHaveAttribute("src", /zhudian-home.*\.webp/);
   await expect(page.locator("#education")).toContainText("燕山大学");
   await expect(page.locator("#education")).toContainText("湖南理工大学");
   await expect(page.locator("#education")).toContainText("2024 — 2027");

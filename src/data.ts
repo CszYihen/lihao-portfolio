@@ -97,6 +97,7 @@ export const profile = {
   email: "lihao_0216@sina.com",
   phone: "19118415578",
   company: "广州逐电科技有限公司",
+  companyWebsite: "http://42.193.140.103:81/",
   internshipRole: "Java 后端开发实习",
   internshipPeriod: "2026年4月至今",
   github: "https://github.com/CszYihen",

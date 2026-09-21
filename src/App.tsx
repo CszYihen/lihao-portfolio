@@ -52,6 +52,7 @@ import {
 import { Lightbox, ProjectGallery, type ProjectImage } from "./Gallery";
 import { projectMedia } from "./media";
 import { useSystemReducedMotion } from "./useSystemReducedMotion";
+import companyPreview from "./assets/company/zhudian-home.webp";
 
 const AnimationContext = createContext(true);
 const asset = (src: string) =>
@@ -910,7 +911,22 @@ export default function App() {
                       </span>
                       <div className="internship-content">
                         <div className="company-line">
-                          <h3>{profile.company}</h3>
+                          <h3>
+                            <LinkPreview
+                              url={profile.companyWebsite}
+                              isStatic
+                              imageSrc={companyPreview}
+                              width={420}
+                              height={208}
+                              linkClassName="company-website"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-label={`${profile.company}官方网站`}
+                            >
+                              {profile.company}
+                              <ArrowUpRight size={14} />
+                            </LinkPreview>
+                          </h3>
                           <span>企业实习</span>
                         </div>
                         <div className="internship-meta">
