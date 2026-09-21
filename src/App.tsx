@@ -5,10 +5,17 @@ import {
   useEffect,
   useRef,
   useState,
+  type CSSProperties,
   type ReactNode,
 } from "react";
 import { flushSync } from "react-dom";
-import { AnimatePresence, MotionConfig, motion, useScroll } from "motion/react";
+import {
+  AnimatePresence,
+  MotionConfig,
+  motion,
+  useInView,
+  useScroll,
+} from "motion/react";
 import {
   ArrowDownToLine,
   ArrowUp,
@@ -82,6 +89,56 @@ function emphasize(text: string) {
     return (
       <mark key={`${matched[1]}-${index}`} className="focus-mark">
         {matched[1]}
+      </mark>
+    );
+  });
+}
+
+const projectSummaryTerms: Record<string, string[]> = {
+  cloud89: [
+    "Netty / JT808",
+    "位置轨迹",
+    "告警证据",
+    "JT1078",
+    "FFmpeg / HLS",
+  ],
+  llm: ["AI 图片复检中台", "Qwen", "Redis API Key", "SSE", "人工审核"],
+  mas: ["滑动窗口", "冷却规则", "JT808", "熔断", "9212 回执"],
+  attendance: [
+    "场景分流",
+    "上报间隔控制",
+    "监管任务",
+    "失败任务恢复",
+    "历史图片清理",
+  ],
+  drama: [
+    "RabbitMQ",
+    "Qdrant",
+    "策略与工厂",
+    "MinIO",
+    "Elasticsearch",
+    "WebSocket",
+  ],
+};
+
+function highlightProjectSummary(project: Project) {
+  const terms = projectSummaryTerms[project.id] ?? [];
+  if (!terms.length) return project.summary;
+  const escaped = [...terms]
+    .sort((a, b) => b.length - a.length)
+    .map((term) => term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  const matcher = new RegExp(`(${escaped.join("|")})`, "g");
+  let keywordIndex = 0;
+  return project.summary.split(matcher).map((part, index) => {
+    if (!terms.includes(part)) return part;
+    const order = keywordIndex++;
+    return (
+      <mark
+        className="project-summary-key"
+        key={`${part}-${index}`}
+        style={{ "--keyword-delay": `${order * 90}ms` } as CSSProperties}
+      >
+        {part}
       </mark>
     );
   });
@@ -232,9 +289,16 @@ function ProjectEntry({
   const [expanded, setExpanded] = useState(false);
   const animated = useContext(AnimationContext);
   const images = projectMedia[project.id] ?? [];
+  const entryRef = useRef<HTMLElement>(null);
+  const isReading = useInView(entryRef, {
+    amount: 0.36,
+    margin: "-12% 0px -36% 0px",
+  });
+  const hasEntered = useInView(entryRef, { amount: 0.16, once: true });
   return (
     <motion.article
-      className="project-entry"
+      ref={entryRef}
+      className={`project-entry${isReading ? " is-reading" : ""}${hasEntered ? " has-entered" : ""}`}
       id={`project-${project.id}`}
       whileHover={
         animated
@@ -299,7 +363,7 @@ function ProjectEntry({
           <span key={tag}>{tag}</span>
         ))}
       </div>
-      <p className="project-description">{project.summary}</p>
+      <p className="project-description">{highlightProjectSummary(project)}</p>
       <div className={`project-body ${images.length ? "with-gallery" : ""}`}>
         <div className="project-narrative">
           <div className="project-role-label">
@@ -336,7 +400,11 @@ function ProjectEntry({
             <div className="project-flow">
               <span>业务链路</span>
               {project.flow.map((item, i) => (
-                <span key={item}>
+                <span
+                  className="project-flow-node"
+                  key={item}
+                  style={{ "--flow-index": i } as CSSProperties}
+                >
                   {i > 0 && <b>→</b>}
                   {item}
                 </span>
@@ -816,7 +884,7 @@ export default function App() {
                           className="education-timeline"
                           aria-label="教育经历时间轴"
                         >
-                          {education.map((item) => (
+                          {education.map((item, educationIndex) => (
                             <li
                               key={`${item.school}-${item.degree}`}
                               className={`education-timeline-item${item.current ? " current" : ""}`}
@@ -825,7 +893,38 @@ export default function App() {
                                 className="education-timeline-rail"
                                 aria-hidden="true"
                               >
-                                <span className="education-timeline-dot" />
+                                {educationIndex < education.length - 1 && (
+                                  <motion.span
+                                    className="education-timeline-line"
+                                    initial={animated ? { scaleY: 0 } : false}
+                                    whileInView={{ scaleY: 1 }}
+                                    viewport={{ once: true, amount: 0.7 }}
+                                    transition={{
+                                      duration: animated ? 0.65 : 0,
+                                      delay: animated
+                                        ? educationIndex * 0.14 + 0.08
+                                        : 0,
+                                      ease: easeOutExpo,
+                                    }}
+                                  />
+                                )}
+                                <motion.span
+                                  className="education-timeline-dot"
+                                  initial={
+                                    animated
+                                      ? { scale: 0.2, opacity: 0 }
+                                      : false
+                                  }
+                                  whileInView={{ scale: 1, opacity: 1 }}
+                                  viewport={{ once: true, amount: 0.7 }}
+                                  transition={{
+                                    duration: animated ? 0.42 : 0,
+                                    delay: animated
+                                      ? educationIndex * 0.14
+                                      : 0,
+                                    ease: easeOutExpo,
+                                  }}
+                                />
                               </div>
                               <article>
                                 <div className="education-heading">

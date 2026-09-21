@@ -87,6 +87,8 @@ test("resume content, five projects and category filtering", async ({
   await expect(page.locator("#education")).toContainText("2024 — 2027");
   await expect(page.locator("#education")).toContainText("2020 — 2024");
   await expect(page.locator(".education-timeline-item")).toHaveCount(2);
+  await expect(page.locator(".education-timeline-line")).toHaveCount(1);
+  await expect(page.locator(".education-timeline-dot")).toHaveCount(2);
   await expect(page.locator(".education-timeline-item").first()).toContainText(
     "燕山大学",
   );
@@ -142,6 +144,13 @@ test("resume content, five projects and category filtering", async ({
     await expect(page.locator(`#project-${project.id} h3`)).toContainText(
       project.title,
     );
+  for (const project of projectCases) {
+    expect(
+      await page
+        .locator(`#project-${project.id} .project-summary-key`)
+        .count(),
+    ).toBeGreaterThanOrEqual(4);
+  }
   const filters = page.getByRole("group", { name: "项目分类" });
   await filters.getByRole("button", { name: /^个人项目/ }).click();
   await expect(page.locator(".project-entry")).toHaveCount(1);
@@ -185,6 +194,13 @@ test("each project expands and collapses its technical details", async ({
     await expect(details).not.toHaveAttribute("inert", "");
     await expect(details).toHaveAttribute("aria-hidden", "false");
     await expect(details.getByText("业务链路", { exact: true })).toBeVisible();
+    expect(await details.locator(".project-flow-node").count()).toBeGreaterThan(
+      2,
+    );
+    await expect(details.locator(".project-flow-node").first()).toHaveCSS(
+      "opacity",
+      "1",
+    );
     expect(
       await details.locator(".project-highlights li").count(),
     ).toBeGreaterThan(0);
