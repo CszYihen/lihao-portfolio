@@ -4555,3 +4555,464 @@ html[data-motion="off"] *:after {
     animation: none !important;
   }
 }
+
+/* Dedicated two-page A4 resume layout. Keep this final so it can refine the
+   screen-oriented print fallbacks above without changing the web page. */
+@media print {
+  @page {
+    size: A4;
+    margin: 9mm 11mm 10mm;
+  }
+
+  :root,
+  body,
+  .resume-app {
+    font-size: 8pt;
+    line-height: 1.35;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .profile-card {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 2mm 8mm;
+    padding: 4mm 5mm 3.5mm 7mm;
+    border: 0;
+    border-left: 3mm solid #284e32;
+    border-bottom: 0;
+    border-radius: 2.5mm;
+    background: linear-gradient(110deg, #edf4e8 0%, #f8fbf6 58%, #fff 100%);
+    min-height: 0;
+    height: auto;
+  }
+  .profile-card-top {
+    display: none !important;
+  }
+  .identity-row {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .mobile-identity h1 {
+    font-size: 23pt;
+    letter-spacing: -0.7pt;
+  }
+  .mobile-identity h1 > span {
+    font-size: 8pt;
+    letter-spacing: 1.5pt;
+    margin-left: 7px;
+  }
+  .profile-role {
+    margin-top: 1mm;
+    font-size: 10pt;
+    font-weight: 650;
+    color: #36583c;
+  }
+  .profile-contact {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
+    display: grid;
+    grid-template-columns: repeat(2, max-content);
+    gap: 2mm 5mm;
+    margin: 0;
+  }
+  .profile-contact a {
+    font-size: 7.2pt;
+    color: #33463a;
+  }
+  .profile-contact .profile-github {
+    grid-column: 1 / -1;
+  }
+  .profile-contact a > svg {
+    width: 3mm;
+    height: 3mm;
+  }
+  .resume-document-header {
+    display: none;
+  }
+
+  .resume-section {
+    padding-top: 3.2mm;
+  }
+  .section-heading {
+    margin-bottom: 2mm;
+    padding-bottom: 1.2mm;
+    border-bottom: 0.45mm solid #d8e4cf;
+  }
+  .section-heading::after {
+    width: 12mm;
+    height: 0.7mm;
+    bottom: -0.55mm;
+    background: #4d7952;
+  }
+  .section-heading h2 {
+    font-size: 11pt;
+    letter-spacing: -0.2pt;
+  }
+  .section-number {
+    font-size: 6.8pt;
+  }
+  .section-english {
+    font-size: 5.4pt;
+    letter-spacing: 1.1pt;
+  }
+
+  .overview-signals {
+    gap: 1.5mm;
+    margin-bottom: 1.8mm;
+  }
+  .overview-signals > li {
+    min-height: 0;
+    padding: 1.7mm 2.2mm;
+    border: 0.3mm solid #d8e4cf;
+    border-radius: 1.8mm;
+    background: #f8fbf5;
+  }
+  .overview-signal-icon {
+    width: 6mm;
+    height: 6mm;
+    border-radius: 1.4mm;
+  }
+  .overview-signal-icon svg {
+    width: 3.3mm;
+    height: 3.3mm;
+  }
+  .overview-signal-copy span {
+    font-size: 6.3pt;
+  }
+  .overview-signal-copy strong {
+    font-size: 8pt;
+  }
+  .overview-signal-copy small {
+    font-size: 6.4pt;
+  }
+  .overview-panel {
+    display: grid;
+    grid-template-columns: 1.18fr 0.82fr;
+    border: 0.3mm solid #d7dfd2;
+    border-radius: 2mm;
+    overflow: hidden;
+  }
+  .overview-main {
+    padding: 2.3mm 3mm;
+    border-right: 0.3mm solid #d7dfd2;
+  }
+  .overview-lead {
+    margin: 0 0 1.5mm;
+    font-size: 7.4pt;
+    line-height: 1.4;
+  }
+  .overview-main .overview-block:first-of-type,
+  .overview-note {
+    display: none;
+  }
+  .overview-block {
+    margin-top: 1mm;
+  }
+  .overview-block-label {
+    display: inline-block;
+    margin-right: 2mm;
+    font-size: 6.2pt;
+  }
+  .overview-capabilities {
+    display: inline-flex;
+    gap: 1mm;
+  }
+  .overview-capabilities li {
+    padding: 0.6mm 1.4mm;
+    font-size: 6.3pt;
+  }
+  .education-card {
+    padding: 2mm 2.5mm;
+    border: 0;
+    border-radius: 0;
+    background: #f8fbf6;
+  }
+  .education-card-header {
+    margin-bottom: 1.3mm;
+  }
+  .education-card-icon {
+    width: 5mm;
+    height: 5mm;
+  }
+  .education-card-header h3 {
+    font-size: 7.8pt;
+  }
+  .education-card-en {
+    font-size: 5pt;
+  }
+  .education-timeline-item {
+    padding-bottom: 1.4mm;
+  }
+  .education-timeline-item:last-child {
+    padding-bottom: 0;
+  }
+  .education-heading h4 {
+    font-size: 7.5pt;
+  }
+  .education-meta {
+    gap: 1mm;
+    margin-top: 0.7mm;
+  }
+  .education-timeline-item time,
+  .education-timeline-item p,
+  .education-detail,
+  .degree,
+  .education-major,
+  .edu-chip {
+    font-size: 5.9pt;
+  }
+  .education-timeline-rail {
+    width: 4mm;
+  }
+
+  .skill-matrix {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 5mm;
+    padding: 1mm 2.5mm;
+    margin-top: 1.8mm;
+    border: 0.3mm solid #dde5d8;
+    border-radius: 1.8mm;
+    background: #fbfcfa;
+  }
+  .skill-row {
+    grid-template-columns: 21mm 1fr;
+    gap: 1.5mm;
+    padding: 1mm 0;
+    border-bottom: 0.2mm dashed #d8e0d3;
+  }
+  .skill-row:nth-last-child(-n + 2) {
+    border-bottom: 0;
+  }
+  .skill-row-label,
+  .skill-row > div {
+    gap: 0.8mm 2mm;
+    font-size: 6.2pt;
+  }
+
+  .internship {
+    display: grid;
+    grid-template-columns: 7mm 1fr;
+    gap: 2mm;
+    padding: 2.5mm 3mm;
+    border: 0.3mm solid #cadbc1;
+    border-radius: 2mm;
+    background: linear-gradient(100deg, #f4f8f1 0%, #fff 70%);
+  }
+  .company-icon {
+    width: 7mm;
+    height: 7mm;
+    border-radius: 1.5mm;
+  }
+  .company-icon svg {
+    width: 4mm;
+    height: 4mm;
+  }
+  .company-line h3 {
+    font-size: 9.2pt;
+  }
+  .internship-meta {
+    margin-top: 0.6mm;
+  }
+  .internship-role,
+  .internship-period,
+  .internship-description,
+  .internship-project-links a {
+    font-size: 6.4pt;
+  }
+  .internship-description {
+    margin: 1.2mm 0;
+    line-height: 1.4;
+  }
+  .internship-project-links {
+    gap: 3mm;
+  }
+
+  .project-filters,
+  .project-role-label,
+  .additional-features {
+    display: none !important;
+  }
+  .project-entry {
+    position: relative;
+    padding: 2.8mm 0 2.6mm 4mm;
+    border-bottom: 0.2mm solid #dce5d7;
+    break-inside: avoid-page;
+  }
+  .project-entry::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 2.7mm;
+    bottom: 2.7mm;
+    width: 0.8mm;
+    border-radius: 1mm;
+    background: #729265;
+  }
+  .project-entry-header {
+    gap: 1.7mm;
+  }
+  .project-icon {
+    width: 6.5mm;
+    height: 6.5mm;
+    min-width: 6.5mm;
+    border-radius: 1.5mm;
+  }
+  .project-icon svg {
+    width: 3.7mm;
+    height: 3.7mm;
+  }
+  .project-heading h3 {
+    font-size: 10.2pt;
+    line-height: 1.15;
+  }
+  .project-heading h3 > span {
+    font-size: 6.6pt;
+  }
+  .project-subtitle {
+    margin-top: 0.5mm;
+    font-size: 6.5pt;
+  }
+  .project-github-preview {
+    font-size: 6pt;
+  }
+  .project-tech {
+    display: flex;
+    gap: 1mm;
+    margin: 1.2mm 0 0.8mm;
+  }
+  .project-tech > span {
+    padding: 0.45mm 1.4mm;
+    font-size: 6.2pt;
+    border: 0.2mm solid #ccd7c7;
+    border-radius: 1mm;
+    background: #f8faf7;
+  }
+  .project-description {
+    margin: 0 0 0.8mm;
+    font-size: 7pt;
+    line-height: 1.36;
+  }
+  .project-highlights {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 4mm;
+  }
+  .project-highlights li {
+    margin: 0;
+    padding-left: 2.2mm;
+  }
+  .project-highlights li::before {
+    top: 1.25mm;
+    width: 0.9mm;
+    height: 0.9mm;
+    background: #588058;
+  }
+  .project-highlights strong,
+  .project-highlights p {
+    display: inline;
+    font-size: 6.8pt;
+    line-height: 1.36;
+  }
+  .project-highlights strong::after {
+    content: "：";
+  }
+  .project-highlights p {
+    margin: 0;
+    color: #525d54;
+  }
+  #project-mas {
+    break-before: page;
+    padding-top: 1mm;
+  }
+  #project-mas::before {
+    top: 1.3mm;
+  }
+
+  .education-section {
+    break-before: auto;
+    padding-top: 3mm;
+  }
+  .honors-block {
+    margin-top: 2mm;
+    padding-top: 0;
+  }
+  .academic-split {
+    grid-template-columns: 1.12fr 0.88fr;
+    gap: 2mm;
+  }
+  .publication-block,
+  .scholarship-card,
+  .competition-card {
+    margin-top: 0;
+  }
+  .publication-heading,
+  .honors-card-heading {
+    min-height: 0;
+    padding: 1.5mm 2mm;
+  }
+  .publication-heading h3,
+  .honors-card-heading h3,
+  .honors-block h3 {
+    font-size: 7.5pt;
+  }
+  .publication-card {
+    padding: 2mm;
+    border: 0.3mm solid #d5dfcf;
+    border-radius: 1.8mm;
+  }
+  .publication-mark {
+    width: 19mm;
+    min-width: 19mm;
+    padding-right: 2mm;
+  }
+  .pub-venue,
+  .publication-title,
+  .publication-note,
+  .pub-role,
+  .pub-year {
+    font-size: 6.7pt;
+  }
+  .scholarship-card,
+  .competition-card {
+    padding: 0;
+    border: 0.3mm solid #d8dfd0;
+    border-radius: 1.8mm;
+  }
+  .scholarship-card li,
+  .competition-card li,
+  .honors-block li,
+  .honors-block strong {
+    padding: 1.5mm 2mm;
+    font-size: 6.7pt;
+  }
+  .competition-card {
+    margin-top: 2mm;
+  }
+  .certificates {
+    display: flex;
+    align-items: center;
+    gap: 1.5mm;
+    padding: 2mm 0 0;
+  }
+  .certificates > b,
+  .certificates > span {
+    padding: 0.8mm 1.5mm;
+    font-size: 6.2pt;
+  }
+  .resume-footer {
+    margin-top: 2mm;
+    padding: 2mm 0 0;
+  }
+  .resume-footer p,
+  .resume-footer a {
+    font-size: 6.2pt;
+  }
+  .footer-label {
+    font-size: 5pt;
+  }
+}
