@@ -688,7 +688,7 @@ p {
 .overview-panel {
   display: grid;
   grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
-  align-items: start;
+  align-items: stretch;
   gap: 10px;
   border: 0;
   border-radius: 0;
@@ -915,6 +915,7 @@ html[data-motion="off"] .link-preview-float.is-popped {
   padding: 12px 14px 13px;
   box-shadow: none;
   scroll-margin-top: 28px;
+  height: 100%;
 }
 .education-card-header {
   display: flex;
@@ -955,8 +956,9 @@ html[data-motion="off"] .link-preview-float.is-popped {
   list-style: none;
   margin: 0;
   padding: 0;
+  flex: 1;
   display: grid;
-  grid-template-rows: repeat(2, 106px);
+  grid-template-rows: repeat(2, minmax(0, 1fr));
   gap: 0;
 }
 .education-timeline-item {
@@ -970,21 +972,24 @@ html[data-motion="off"] .link-preview-float.is-popped {
   position: relative;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
 }
 .education-timeline-rail::before {
   display: none;
 }
 .education-timeline-line {
   position: absolute;
-  top: 50%;
-  bottom: calc(-50% + 19px);
+  top: calc(50% - 24px);
+  bottom: auto;
+  height: 100%;
   width: 1.5px;
   background: linear-gradient(180deg, #6e9660 0%, #d5e2c8 100%);
   border-radius: 1px;
   transform-origin: top center;
 }
 .education-timeline-dot {
+  position: absolute;
+  top: calc(50% - 28px);
   width: 8px;
   height: 8px;
   margin-top: 0;
