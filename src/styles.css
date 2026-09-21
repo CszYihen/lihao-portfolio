@@ -1006,31 +1006,13 @@ html[data-motion="off"] .link-preview-float.is-popped {
 }
 .education-timeline-item article {
   min-width: 0;
-  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  margin: 9px 0;
-  padding: 12px 13px;
-  border: 1px solid #dce7d3;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.42);
-  overflow: hidden;
+  padding: 9px 0;
 }
 .education-timeline-item:first-child article {
-  border-bottom-style: solid;
-}
-.education-timeline-item article::after {
-  content: attr(data-step);
-  position: absolute;
-  right: 10px;
-  bottom: -8px;
-  font-size: 38px;
-  line-height: 1;
-  font-weight: 750;
-  letter-spacing: -2px;
-  color: rgba(79, 115, 64, 0.055);
-  pointer-events: none;
+  border-bottom: 1px dashed #d9e5d1;
 }
 .education-heading {
   display: flex;
@@ -1038,8 +1020,6 @@ html[data-motion="off"] .link-preview-float.is-popped {
   flex-wrap: wrap;
   gap: 6px;
   margin-bottom: 6px;
-  position: relative;
-  z-index: 1;
 }
 .education-heading h4 {
   font-size: 15px;
@@ -1079,8 +1059,6 @@ html[data-motion="off"] .link-preview-float.is-popped {
   display: grid;
   gap: 5px;
   min-width: 0;
-  position: relative;
-  z-index: 1;
 }
 .education-study {
   display: flex;

@@ -910,9 +910,7 @@ export default function App() {
                                     viewport={{ once: true, amount: 0.7 }}
                                     transition={{
                                       duration: animated ? 0.65 : 0,
-                                      delay: animated
-                                        ? educationIndex * 0.14 + 0.08
-                                        : 0,
+                                      delay: animated ? 0.3 : 0,
                                       ease: easeOutExpo,
                                     }}
                                   />
@@ -929,17 +927,35 @@ export default function App() {
                                   transition={{
                                     duration: animated ? 0.42 : 0,
                                     delay: animated
-                                      ? educationIndex * 0.14
+                                      ? educationIndex === 0
+                                        ? 0.05
+                                        : 0.78
                                       : 0,
                                     ease: easeOutExpo,
                                   }}
                                 />
                               </div>
-                              <article
-                                data-step={String(educationIndex + 1).padStart(
-                                  2,
-                                  "0",
-                                )}
+                              <motion.article
+                                initial={
+                                  animated
+                                    ? { opacity: 0, x: 12, filter: "blur(3px)" }
+                                    : false
+                                }
+                                whileInView={{
+                                  opacity: 1,
+                                  x: 0,
+                                  filter: "blur(0px)",
+                                }}
+                                viewport={{ once: true, amount: 0.55 }}
+                                transition={{
+                                  duration: animated ? 0.52 : 0,
+                                  delay: animated
+                                    ? educationIndex === 0
+                                      ? 0.12
+                                      : 0.86
+                                    : 0,
+                                  ease: easeOutExpo,
+                                }}
                               >
                                 <div className="education-heading">
                                   <h4>{item.school}</h4>
@@ -966,7 +982,7 @@ export default function App() {
                                     ))}
                                   </div>
                                 </div>
-                              </article>
+                              </motion.article>
                             </li>
                           ))}
                         </ol>
