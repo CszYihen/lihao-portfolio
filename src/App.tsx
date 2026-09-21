@@ -799,8 +799,9 @@ export default function App() {
                     <div className="overview-panel">
                       <div className="overview-main">
                         <p className="overview-lead">
-                          计算机技术硕士在读，以 Java
-                          后端企业实习为主线，兼顾学术研究与开源实践。
+                          计算机技术硕士在读，聚焦
+                          <strong> Java 后端与企业级物联网系统</strong>
+                          ，具备从设备接入、业务处理到 AI 研判的完整项目实践。
                         </p>
                         <div className="overview-block">
                           <span className="overview-block-label">
@@ -833,37 +834,45 @@ export default function App() {
                           <span className="overview-block-label">能力覆盖</span>
                           <ul className="overview-capabilities">
                             <li>设备接入</li>
+                            <li>实时通信</li>
                             <li>告警处理</li>
                             <li>岸基业务</li>
                             <li>AI 研判</li>
-                            <li>人员同步</li>
                           </ul>
                         </div>
-                        <p className="overview-note">
-                          另参与
-                          <LinkPreview
-                            url="#project-attendance"
-                            isStatic
-                            imageSrc={projectCover("attendance")}
-                            width={220}
-                            height={138}
-                            onClick={() => setFilter("all")}
-                          >
-                            无感考勤等业务系统
-                          </LinkPreview>
-                          ，并独立完成开源项目{" "}
-                          <LinkPreview
-                            url="#project-drama"
-                            isStatic
-                            imageSrc={projectCover("drama")}
-                            width={220}
-                            height={138}
-                            onClick={() => setFilter("all")}
-                          >
-                            Yihen Drama
-                          </LinkPreview>
-                          。
-                        </p>
+                        <div className="overview-note">
+                          <span className="overview-note-icon" aria-hidden="true">
+                            <Code2 size={15} />
+                          </span>
+                          <div>
+                            <span className="overview-note-label">补充实践</span>
+                            <p>
+                              参与
+                              <LinkPreview
+                                url="#project-attendance"
+                                isStatic
+                                imageSrc={projectCover("attendance")}
+                                width={220}
+                                height={138}
+                                onClick={() => setFilter("all")}
+                              >
+                                无感考勤与人员同步
+                              </LinkPreview>
+                              ，并独立完成 AI 短剧开源项目{" "}
+                              <LinkPreview
+                                url="#project-drama"
+                                isStatic
+                                imageSrc={projectCover("drama")}
+                                width={220}
+                                height={138}
+                                onClick={() => setFilter("all")}
+                              >
+                                Yihen Drama
+                              </LinkPreview>
+                              。
+                            </p>
+                          </div>
+                        </div>
                       </div>
                       <aside
                         className="education-card"

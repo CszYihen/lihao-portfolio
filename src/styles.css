@@ -699,17 +699,21 @@ p {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 11px;
-  padding: 14px 16px;
+  gap: 13px;
+  padding: 16px 18px;
   background: #fff;
   border-right: 1px solid #e4ecd9;
 }
 .overview-lead {
   margin: 0;
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: 15px;
+  line-height: 1.68;
   color: #3f5342;
-  font-weight: 600;
+  font-weight: 550;
+}
+.overview-lead strong {
+  color: #24492e;
+  font-weight: 720;
 }
 .overview-block {
   display: flex;
@@ -717,7 +721,7 @@ p {
   gap: 6px;
 }
 .overview-block-label {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 650;
   letter-spacing: 0.8px;
   color: #6a7a63;
@@ -725,20 +729,23 @@ p {
 .overview-project-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 7px;
 }
 .overview-project-chips a {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  font-size: 12px;
-  font-weight: 600;
+  justify-content: space-between;
+  gap: 8px;
+  flex: 1 1 138px;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 650;
   color: #2f5a3a;
   text-decoration: none;
   border: 1px solid #d0e0c0;
   background: #f4f8ef;
   border-radius: 8px;
-  padding: 5px 9px;
+  padding: 7px 10px;
   cursor: pointer;
   transition:
     background 0.2s var(--ease-out),
@@ -756,24 +763,63 @@ p {
   padding: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: 6px;
 }
 .overview-capabilities li {
-  font-size: 12px;
-  font-weight: 550;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
   color: #445548;
   background: #f6f8f3;
   border: 1px solid #e2e9da;
   border-radius: 999px;
-  padding: 4px 9px;
+  padding: 5px 10px;
+}
+.overview-capabilities li::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #7da269;
+  box-shadow: 0 0 0 3px #e5efdc;
 }
 .overview-note {
   margin: 0;
-  padding-top: 8px;
-  font-size: 12px;
-  line-height: 1.5;
-  color: #6d7d66;
-  border-top: 1px dashed #e2e9da;
+  padding: 10px 11px;
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  color: #5f7066;
+  border: 1px solid #e0e9d8;
+  border-radius: 10px;
+  background: #f8faf5;
+}
+.overview-note-icon {
+  width: 27px;
+  height: 27px;
+  flex: 0 0 27px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  color: #507443;
+  background: #e7f0de;
+}
+.overview-note-label {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 11px;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: 0.55px;
+  color: #61735a;
+}
+.overview-note p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
 }
 .overview-note a {
   color: #3f6a38;
