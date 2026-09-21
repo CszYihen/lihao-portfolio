@@ -910,7 +910,7 @@ html[data-motion="off"] .link-preview-float.is-popped {
   border: 0;
   border-radius: 0;
   background: linear-gradient(180deg, #f7faf3 0%, #eef4e8 100%);
-  padding: 12px 14px 13px;
+  padding: 14px 16px 15px;
   box-shadow: none;
   scroll-margin-top: 28px;
 }
@@ -918,14 +918,14 @@ html[data-motion="off"] .link-preview-float.is-popped {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 10px;
-  padding-bottom: 8px;
+  margin-bottom: 0;
+  padding-bottom: 10px;
   border-bottom: 1px solid #dce8d0;
   flex-shrink: 0;
 }
 .education-card-icon {
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   border-radius: 7px;
   display: inline-flex;
   align-items: center;
@@ -936,7 +936,7 @@ html[data-motion="off"] .link-preview-float.is-popped {
   flex-shrink: 0;
 }
 .education-card-header h3 {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   color: #2a4528;
   letter-spacing: -0.1px;
@@ -953,29 +953,31 @@ html[data-motion="off"] .link-preview-float.is-popped {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  flex: 1;
+  display: grid;
+  grid-template-rows: repeat(2, minmax(96px, 1fr));
+  gap: 0;
 }
 .education-timeline-item {
   display: grid;
   grid-template-columns: 10px minmax(0, 1fr);
-  column-gap: 10px;
+  column-gap: 12px;
   position: relative;
+  min-height: 0;
 }
 .education-timeline-rail {
   position: relative;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center;
 }
 .education-timeline-rail::before {
   display: none;
 }
 .education-timeline-line {
   position: absolute;
-  top: 10px;
-  bottom: -14px;
+  top: 50%;
+  bottom: -50%;
   width: 1.5px;
   background: linear-gradient(180deg, #6e9660 0%, #d5e2c8 100%);
   border-radius: 1px;
@@ -984,7 +986,7 @@ html[data-motion="off"] .link-preview-float.is-popped {
 .education-timeline-dot {
   width: 8px;
   height: 8px;
-  margin-top: 4px;
+  margin-top: 0;
   border-radius: 50%;
   border: 1.5px solid #4f7340;
   background: #fff;
@@ -998,17 +1000,23 @@ html[data-motion="off"] .link-preview-float.is-popped {
 }
 .education-timeline-item article {
   min-width: 0;
-  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 12px 0;
+}
+.education-timeline-item:first-child article {
+  border-bottom: 1px dashed #dce6d4;
 }
 .education-heading {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 6px;
-  margin-bottom: 4px;
+  margin-bottom: 8px;
 }
 .education-heading h4 {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #243d26;
   letter-spacing: -0.1px;
@@ -1035,14 +1043,19 @@ html[data-motion="off"] .link-preview-float.is-popped {
   line-height: 1.35;
 }
 .education-meta {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+.education-period,
+.education-study {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 5px 7px;
-  min-width: 0;
+  gap: 6px 8px;
 }
 .education-meta time {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 650;
   color: #4f7340;
   letter-spacing: 0.1px;
@@ -1050,7 +1063,7 @@ html[data-motion="off"] .link-preview-float.is-popped {
   flex-shrink: 0;
 }
 .education-major {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 650;
   color: #2f4e2c;
   line-height: 1.35;
@@ -4957,6 +4970,9 @@ html[data-motion="off"] *:after {
   .education-card-en {
     font-size: 5pt;
   }
+  .education-timeline {
+    display: block;
+  }
   .education-timeline-item {
     padding-bottom: 1.4mm;
   }
@@ -4966,9 +4982,22 @@ html[data-motion="off"] *:after {
   .education-heading h4 {
     font-size: 7.5pt;
   }
+  .education-timeline-item article {
+    display: block;
+    padding: 0;
+  }
+  .education-timeline-item:first-child article {
+    border-bottom: 0;
+  }
   .education-meta {
+    display: flex;
+    flex-wrap: wrap;
     gap: 1mm;
     margin-top: 0.7mm;
+  }
+  .education-period,
+  .education-study {
+    display: contents;
   }
   .education-timeline-item time,
   .education-timeline-item p,

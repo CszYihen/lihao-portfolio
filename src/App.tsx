@@ -945,19 +945,23 @@ export default function App() {
                                   )}
                                 </div>
                                 <div className="education-meta">
-                                  <time>{item.period}</time>
-                                  <span className="degree">{item.degree}</span>
-                                  <span className="education-major">
-                                    {item.major}
-                                  </span>
-                                  {item.highlights?.map((mark) => (
-                                    <span
-                                      key={mark.label}
-                                      className={`edu-chip edu-chip-${mark.tone}`}
-                                    >
-                                      {mark.label}
+                                  <div className="education-period">
+                                    <time>{item.period}</time>
+                                    <span className="degree">{item.degree}</span>
+                                  </div>
+                                  <div className="education-study">
+                                    <span className="education-major">
+                                      {item.major}
                                     </span>
-                                  ))}
+                                    {item.highlights?.map((mark) => (
+                                      <span
+                                        key={mark.label}
+                                        className={`edu-chip edu-chip-${mark.tone}`}
+                                      >
+                                        {mark.label}
+                                      </span>
+                                    ))}
+                                  </div>
                                 </div>
                               </article>
                             </li>
