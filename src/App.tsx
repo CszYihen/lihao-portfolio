@@ -935,9 +935,15 @@ export default function App() {
                                   }}
                                 />
                               </div>
-                              <article>
+                              <article
+                                data-step={String(educationIndex + 1).padStart(
+                                  2,
+                                  "0",
+                                )}
+                              >
                                 <div className="education-heading">
                                   <h4>{item.school}</h4>
+                                  <time>{item.period}</time>
                                   {item.current && (
                                     <span className="education-status">
                                       在读
@@ -945,11 +951,8 @@ export default function App() {
                                   )}
                                 </div>
                                 <div className="education-meta">
-                                  <div className="education-period">
-                                    <time>{item.period}</time>
-                                    <span className="degree">{item.degree}</span>
-                                  </div>
                                   <div className="education-study">
+                                    <span className="degree">{item.degree}</span>
                                     <span className="education-major">
                                       {item.major}
                                     </span>
