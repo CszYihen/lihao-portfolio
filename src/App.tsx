@@ -141,6 +141,28 @@ const projectSummaryTerms: Record<string, string[]> = {
   ],
 };
 
+const corePractices = [
+  { id: "protocol", label: "协议接入", projectIds: ["cloud89", "mas"] },
+  {
+    id: "async",
+    label: "异步编排",
+    projectIds: ["cloud89", "llm", "attendance", "drama"],
+  },
+  {
+    id: "alarm",
+    label: "告警闭环",
+    projectIds: ["cloud89", "llm", "mas", "attendance"],
+  },
+  {
+    id: "realtime",
+    label: "实时通信",
+    projectIds: ["cloud89", "llm", "mas", "drama"],
+  },
+  { id: "model", label: "模型接入", projectIds: ["llm", "drama"] },
+] as const;
+
+type CorePractice = (typeof corePractices)[number];
+
 function highlightProjectSummary(project: Project) {
   const terms = projectSummaryTerms[project.id] ?? [];
   if (!terms.length) return project.summary;
@@ -302,9 +324,11 @@ function SectionTitle({
 function ProjectEntry({
   project,
   onOpen,
+  practiceState,
 }: {
   project: Project;
   onOpen: (title: string, images: ProjectImage[], index: number) => void;
+  practiceState?: "match" | "dimmed";
 }) {
   const [expanded, setExpanded] = useState(false);
   const animated = useContext(AnimationContext);
@@ -318,7 +342,7 @@ function ProjectEntry({
   return (
     <motion.article
       ref={entryRef}
-      className={`project-entry${isReading ? " is-reading" : ""}${hasEntered ? " has-entered" : ""}`}
+      className={`project-entry${isReading ? " is-reading" : ""}${hasEntered ? " has-entered" : ""}${practiceState ? ` is-practice-${practiceState}` : ""}`}
       id={`project-${project.id}`}
       whileHover={
         animated
@@ -326,16 +350,28 @@ function ProjectEntry({
           : undefined
       }
     >
-      <time
+      <button
+        type="button"
         className={`project-timeline-marker${project.category === "personal" ? " personal" : ""}`}
-        aria-label={project.period.label}
+        aria-label={`定位到${project.title}，${project.period.label}`}
+        onClick={() =>
+          entryRef.current?.scrollIntoView({
+            behavior: animated ? "smooth" : "auto",
+            block: "start",
+          })
+        }
       >
-        <span>{project.period.start}</span>
-        <span className="project-timeline-end">
-          <i aria-hidden="true" />
-          {project.period.end}
+        <time>
+          <span>{project.period.start}</span>
+          <span className="project-timeline-end">
+            <i aria-hidden="true" />
+            {project.period.end}
+          </span>
+        </time>
+        <span className="project-timeline-tooltip" aria-hidden="true">
+          {project.title}
         </span>
-      </time>
+      </button>
       <div className="project-entry-header">
         <motion.div
           className={`project-icon ${project.category === "personal" ? "personal" : ""}`}
@@ -427,8 +463,8 @@ function ProjectEntry({
                 </li>
               ))}
             </ul>
-            <div className="project-flow">
-              <span>业务链路</span>
+            <div className="project-flow" aria-label="业务链路">
+              <span className="project-flow-label">业务链路</span>
               {project.flow.map((item, i) => (
                 <span
                   className="project-flow-node"
@@ -479,6 +515,9 @@ export default function App() {
   const animated = motionEnabled && !systemReduced;
   const [activeSection, setActiveSection] = useState("overview");
   const [filter, setFilter] = useState("all");
+  const [activePracticeId, setActivePracticeId] = useState<
+    CorePractice["id"] | null
+  >(null);
   const [lightbox, setLightbox] = useState<{
     title: string;
     images: ProjectImage[];
@@ -553,10 +592,35 @@ export default function App() {
     lightboxTrigger.current = document.activeElement as HTMLElement | null;
     setLightbox({ title, images, index });
   };
+  const showAllProjects = () => {
+    setFilter("all");
+    setActivePracticeId(null);
+  };
+  const selectPractice = (practice: CorePractice) => {
+    const nextPracticeId =
+      activePracticeId === practice.id ? null : practice.id;
+    setActivePracticeId(nextPracticeId);
+    setFilter("all");
+    if (!nextPracticeId) return;
+    requestAnimationFrame(() => {
+      document
+        .getElementById(`project-${practice.projectIds[0]}`)
+        ?.scrollIntoView({
+          behavior: animated ? "smooth" : "auto",
+          block: "start",
+        });
+    });
+  };
   const printResume = () => {
-    flushSync(() => setFilter("all"));
+    flushSync(() => {
+      setFilter("all");
+      setActivePracticeId(null);
+    });
     window.print();
   };
+  const activePractice = corePractices.find(
+    (practice) => practice.id === activePracticeId,
+  );
   const filtered = projects.filter(
     (project) => filter === "all" || project.category === filter,
   );
@@ -870,7 +934,7 @@ export default function App() {
                                   imageSrc={projectCover(project.id)}
                                   width={200}
                                   height={126}
-                                  onClick={() => setFilter("all")}
+                                  onClick={showAllProjects}
                                 >
                                   {project.title}
                                   <ArrowUpRight size={11} />
@@ -881,19 +945,32 @@ export default function App() {
                         <div className="overview-block">
                           <span className="overview-block-label">核心实践</span>
                           <ul className="overview-capabilities">
-                            <li>协议接入</li>
-                            <li>异步编排</li>
-                            <li>告警闭环</li>
-                            <li>实时通信</li>
-                            <li>模型接入</li>
+                            {corePractices.map((practice) => (
+                              <li key={practice.id}>
+                                <button
+                                  type="button"
+                                  aria-pressed={
+                                    activePracticeId === practice.id
+                                  }
+                                  onClick={() => selectPractice(practice)}
+                                >
+                                  {practice.label}
+                                </button>
+                              </li>
+                            ))}
                           </ul>
                         </div>
                         <div className="overview-note">
-                          <span className="overview-note-icon" aria-hidden="true">
+                          <span
+                            className="overview-note-icon"
+                            aria-hidden="true"
+                          >
                             <Code2 size={15} />
                           </span>
                           <div>
-                            <span className="overview-note-label">补充实践</span>
+                            <span className="overview-note-label">
+                              补充实践
+                            </span>
                             <p>
                               参与
                               <LinkPreview
@@ -902,7 +979,7 @@ export default function App() {
                                 imageSrc={projectCover("attendance")}
                                 width={220}
                                 height={138}
-                                onClick={() => setFilter("all")}
+                                onClick={showAllProjects}
                               >
                                 无感考勤
                               </LinkPreview>
@@ -913,7 +990,7 @@ export default function App() {
                                 imageSrc={projectCover("drama")}
                                 width={220}
                                 height={138}
-                                onClick={() => setFilter("all")}
+                                onClick={showAllProjects}
                               >
                                 Yihen Drama
                               </LinkPreview>
@@ -1016,7 +1093,9 @@ export default function App() {
                                 </div>
                                 <div className="education-meta">
                                   <div className="education-study">
-                                    <span className="degree">{item.degree}</span>
+                                    <span className="degree">
+                                      {item.degree}
+                                    </span>
                                     <span className="education-major">
                                       {item.major}
                                     </span>
@@ -1129,11 +1208,9 @@ export default function App() {
                           等岸基能力；在复检云平台落地{" "}
                           <mark className="focus-mark">自动化大模型复检</mark>
                           ，并支持 <mark className="focus-mark">人工审核</mark>
-                          ；在 MAS 推进船端告警与船岸协同。另参与面向工地场景的无感考勤，完成{" "}
-                          <mark className="focus-mark">
-                            人脸识别自动打卡
-                          </mark>
-                          、{" "}
+                          ；在 MAS
+                          推进船端告警与船岸协同。另参与面向工地场景的无感考勤，完成{" "}
+                          <mark className="focus-mark">人脸识别自动打卡</mark>、{" "}
                           <mark className="focus-mark">
                             陌生人标记与非法进入告警
                           </mark>
@@ -1150,7 +1227,7 @@ export default function App() {
                                 imageSrc={projectCover(project.id)}
                                 width={200}
                                 height={126}
-                                onClick={() => setFilter("all")}
+                                onClick={showAllProjects}
                               >
                                 {project.title}
                                 <ArrowUpRight size={11} />
@@ -1197,7 +1274,10 @@ export default function App() {
                         ].map((item) => (
                           <button
                             key={item.id}
-                            onClick={() => setFilter(item.id)}
+                            onClick={() => {
+                              setFilter(item.id);
+                              setActivePracticeId(null);
+                            }}
                             aria-pressed={filter === item.id}
                             className={filter === item.id ? "active" : ""}
                           >
@@ -1224,7 +1304,10 @@ export default function App() {
                   </span>
                 </Reveal>
                 <div className="project-list" ref={projectListRef}>
-                  <div className="project-timeline-motion-track" aria-hidden="true">
+                  <div
+                    className="project-timeline-motion-track"
+                    aria-hidden="true"
+                  >
                     <motion.span
                       className="project-timeline-progress"
                       style={{ scaleY: renderedTimelineProgress }}
@@ -1242,7 +1325,19 @@ export default function App() {
                       variant="scaleIn"
                       amount={0.12}
                     >
-                      <ProjectEntry project={project} onOpen={openGallery} />
+                      <ProjectEntry
+                        project={project}
+                        onOpen={openGallery}
+                        practiceState={
+                          activePractice
+                            ? activePractice.projectIds.some(
+                                (projectId) => projectId === project.id,
+                              )
+                              ? "match"
+                              : "dimmed"
+                            : undefined
+                        }
+                      />
                     </Reveal>
                   ))}
                 </div>

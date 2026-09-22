@@ -72,7 +72,9 @@ test("resume content, five projects and category filtering", async ({
   await expect(page.locator("#overview .overview-capabilities")).toContainText(
     "告警闭环",
   );
-  await expect(page.locator("#overview #education.education-card")).toBeVisible();
+  await expect(
+    page.locator("#overview #education.education-card"),
+  ).toBeVisible();
   await expect(page.locator("#education .education-status")).toContainText(
     "在读",
   );
@@ -131,31 +133,29 @@ test("resume content, five projects and category filtering", async ({
   await expect(page.locator(".scholarship-stage-grad")).toContainText(
     "研究生期间",
   );
-  await expect(page.locator(".scholarship-stage-undergrad").first()).toContainText(
-    "本科期间",
-  );
+  await expect(
+    page.locator(".scholarship-stage-undergrad").first(),
+  ).toContainText("本科期间");
   await expect(page.locator(".competition-card")).toContainText("F 奖");
   await expect(page.locator(".publication-mark")).toContainText("IJCAI");
   await expect(page.locator(".publication-mark")).toContainText("CCF-A");
   await expect(page.locator(".project-entry")).toHaveCount(5);
   await expect(page.locator(".project-timeline-marker")).toHaveCount(5);
-  await expect(page.locator("#project-cloud89 .project-timeline-marker")).toHaveAttribute(
-    "aria-label",
-    "2026年8月至今",
-  );
-  await expect(page.locator("#project-attendance .project-timeline-marker")).toContainText(
-    "2026.04",
-  );
-  await expect(page.locator("#project-mas .project-timeline-marker")).toContainText(
-    "2026.07",
-  );
-  await expect(page.locator("#project-llm .project-timeline-marker")).toContainText(
-    "2026.07",
-  );
-  await expect(page.locator("#project-drama .project-timeline-marker")).toHaveAttribute(
-    "aria-label",
-    "2026年1月至3月",
-  );
+  await expect(
+    page.locator("#project-cloud89 .project-timeline-marker"),
+  ).toHaveAttribute("aria-label", "定位到船舶管理云平台，2026年8月至今");
+  await expect(
+    page.locator("#project-attendance .project-timeline-marker"),
+  ).toContainText("2026.04");
+  await expect(
+    page.locator("#project-mas .project-timeline-marker"),
+  ).toContainText("2026.07");
+  await expect(
+    page.locator("#project-llm .project-timeline-marker"),
+  ).toContainText("2026.07");
+  await expect(
+    page.locator("#project-drama .project-timeline-marker"),
+  ).toHaveAttribute("aria-label", "定位到Yihen Drama，2026年1月至3月");
   await expect(page.locator(".project-entry").nth(3)).toHaveAttribute(
     "id",
     "project-attendance",
@@ -165,7 +165,9 @@ test("resume content, five projects and category filtering", async ({
     "project-drama",
   );
   await expect(
-    page.locator('#project-drama a[href="https://github.com/CszYihen/Yihen-Drama"]'),
+    page.locator(
+      '#project-drama a[href="https://github.com/CszYihen/Yihen-Drama"]',
+    ),
   ).toBeVisible();
   await expect(
     page.locator('.profile-github[href="https://github.com/CszYihen"]'),
@@ -186,12 +188,8 @@ test("resume content, five projects and category filtering", async ({
   await expect(page.locator("#project-cloud89")).toContainText(
     "实时与历史视频回放",
   );
-  await expect(page.locator("#project-llm")).toContainText(
-    "配置化大模型复检",
-  );
-  await expect(page.locator("#project-llm")).toContainText(
-    "工厂 + 策略模式",
-  );
+  await expect(page.locator("#project-llm")).toContainText("配置化大模型复检");
+  await expect(page.locator("#project-llm")).toContainText("工厂 + 策略模式");
   await expect(page.locator("#project-llm")).toContainText(
     "新增模型只需扩展策略",
   );
@@ -212,15 +210,13 @@ test("resume content, five projects and category filtering", async ({
   );
   for (const project of projectCases) {
     expect(
-      await page
-        .locator(`#project-${project.id} .project-summary-key`)
-        .count(),
+      await page.locator(`#project-${project.id} .project-summary-key`).count(),
     ).toBeGreaterThanOrEqual(4);
   }
   expect(
-    await page.locator("#project-cloud89").evaluate((entry) =>
-      getComputedStyle(entry, "::before").content,
-    ),
+    await page
+      .locator("#project-cloud89")
+      .evaluate((entry) => getComputedStyle(entry, "::before").content),
   ).toBe("none");
   const filters = page.getByRole("group", { name: "项目分类" });
   await filters.getByRole("button", { name: /^个人项目/ }).click();
@@ -291,7 +287,9 @@ test("every project gallery loads, changes thumbnails and opens the selected ima
   for (const project of projectCases) {
     const entry = page.locator(`#project-${project.id}`);
     await entry.locator(".animated-testimonials").scrollIntoViewIfNeeded();
-    const preview = entry.locator('.at-card[data-active="true"] .at-image-btn').last();
+    const preview = entry
+      .locator('.at-card[data-active="true"] .at-image-btn')
+      .last();
     await expectLoaded(preview.locator("img"));
     await expect(preview).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
     await expect
@@ -300,7 +298,8 @@ test("every project gallery loads, changes thumbnails and opens the selected ima
           const image = button.querySelector("img")!;
           const bounds = button.getBoundingClientRect();
           return Math.abs(
-            image.naturalWidth / image.naturalHeight - bounds.width / bounds.height,
+            image.naturalWidth / image.naturalHeight -
+              bounds.width / bounds.height,
           );
         }),
       )
@@ -359,7 +358,9 @@ test("lightbox keyboard, paging, filmstrip, zoom, focus trap and inert backgroun
   await page
     .locator("#project-drama .animated-testimonials")
     .evaluate((element) => element.scrollIntoView({ block: "center" }));
-  const preview = page.locator('#project-drama .at-card[data-active="true"] .at-image-btn').last();
+  const preview = page
+    .locator('#project-drama .at-card[data-active="true"] .at-image-btn')
+    .last();
   const returnFocusName = await preview.getAttribute("aria-label");
   await preview.click();
   const dialog = page.getByRole("dialog");
@@ -524,7 +525,35 @@ test("system reduced motion overrides an enabled preference", async ({
   await expect(gallery.locator(".at-controls")).toBeVisible();
 });
 
-test("wide project timeline follows project reading progress", async ({ page }) => {
+test("core practices connect to projects and expanded flow animates in sequence", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+
+  const modelPractice = page.getByRole("button", { name: "模型接入" });
+  await modelPractice.click();
+  await expect(modelPractice).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator(".project-entry.is-practice-match")).toHaveCount(2);
+  await expect(page.locator("#project-llm")).toHaveClass(/is-practice-match/);
+  await expect(page.locator("#project-drama")).toHaveClass(/is-practice-match/);
+  await expect(page.locator("#project-cloud89")).toHaveClass(
+    /is-practice-dimmed/,
+  );
+
+  await page.locator("#project-llm .detail-toggle").click();
+  const flowNodes = page.locator("#project-llm .project-flow-node");
+  await expect(flowNodes.first()).toBeVisible();
+  await expect(flowNodes).toHaveCount(5);
+
+  await modelPractice.click();
+  await expect(modelPractice).toHaveAttribute("aria-pressed", "false");
+  await expect(page.locator(".project-entry.is-practice-match")).toHaveCount(0);
+});
+
+test("wide project timeline follows project reading progress and supports navigation", async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 1920, height: 1000 });
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
@@ -532,8 +561,8 @@ test("wide project timeline follows project reading progress", async ({ page }) 
   const cursor = page.locator(".project-timeline-cursor");
   await expect(track).toBeVisible();
   await page.locator("#project-cloud89").scrollIntoViewIfNeeded();
-  const start = await cursor.evaluate((element) =>
-    (element as HTMLElement).offsetTop,
+  const start = await cursor.evaluate(
+    (element) => (element as HTMLElement).offsetTop,
   );
   await page.locator("#project-drama").scrollIntoViewIfNeeded();
   await expect
@@ -541,6 +570,15 @@ test("wide project timeline follows project reading progress", async ({ page }) 
       cursor.evaluate((element) => (element as HTMLElement).offsetTop),
     )
     .toBeGreaterThan(start + 100);
+  const cloudMarker = page.getByRole("button", {
+    name: "定位到船舶管理云平台，2026年8月至今",
+  });
+  await cloudMarker.hover();
+  await expect(
+    page.locator("#project-cloud89 .project-timeline-tooltip"),
+  ).toBeVisible();
+  await cloudMarker.click();
+  await expect(page.locator("#project-cloud89")).toBeInViewport();
 });
 
 for (const width of [320, 390, 768, 1024, 1440, 1920]) {
@@ -568,16 +606,28 @@ for (const width of [320, 390, 768, 1024, 1440, 1920]) {
     }
     if (width < 700) {
       const profileSpacing = await page.evaluate(() => {
-        const badge = document.querySelector(".graduate-badge")!.getBoundingClientRect();
-        const summary = document.querySelector(".profile-summary")!.getBoundingClientRect();
-        const facts = document.querySelector(".profile-facts")!.getBoundingClientRect();
+        const badge = document
+          .querySelector(".graduate-badge")!
+          .getBoundingClientRect();
+        const summary = document
+          .querySelector(".profile-summary")!
+          .getBoundingClientRect();
+        const facts = document
+          .querySelector(".profile-facts")!
+          .getBoundingClientRect();
         return {
           badgeSummaryGap: summary.top - badge.bottom,
           summaryFactsGap: facts.top - summary.bottom,
         };
       });
-      expect(profileSpacing.badgeSummaryGap, `${width}px badge overlap`).toBeGreaterThanOrEqual(0);
-      expect(profileSpacing.summaryFactsGap, `${width}px summary overlap`).toBeGreaterThanOrEqual(0);
+      expect(
+        profileSpacing.badgeSummaryGap,
+        `${width}px badge overlap`,
+      ).toBeGreaterThanOrEqual(0);
+      expect(
+        profileSpacing.summaryFactsGap,
+        `${width}px summary overlap`,
+      ).toBeGreaterThanOrEqual(0);
     }
     for (const project of projectCases) {
       const gallery = page.locator(`#project-${project.id} .project-gallery`);
@@ -620,7 +670,9 @@ for (const width of [320, 390, 768, 1024, 1440, 1920]) {
         path: `.qa/resume-projects-${width === 1440 ? "desktop" : "mobile"}.png`,
       });
     }
-    const preview = page.locator('#project-drama .at-card[data-active="true"] .at-image-btn').last();
+    const preview = page
+      .locator('#project-drama .at-card[data-active="true"] .at-image-btn')
+      .last();
     await preview.click();
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible();
