@@ -525,30 +525,20 @@ test("system reduced motion overrides an enabled preference", async ({
   await expect(gallery.locator(".at-controls")).toBeVisible();
 });
 
-test("core practices connect to projects and expanded flow animates in sequence", async ({
-  page,
-}) => {
+test("core practices stay static and expanded flow is readable", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
 
-  const modelPractice = page.getByRole("button", { name: "模型接入" });
-  await modelPractice.click();
-  await expect(modelPractice).toHaveAttribute("aria-pressed", "true");
-  await expect(page.locator(".project-entry.is-practice-match")).toHaveCount(2);
-  await expect(page.locator("#project-llm")).toHaveClass(/is-practice-match/);
-  await expect(page.locator("#project-drama")).toHaveClass(/is-practice-match/);
-  await expect(page.locator("#project-cloud89")).toHaveClass(
-    /is-practice-dimmed/,
-  );
+  const practices = page.locator(".overview-capabilities li");
+  await expect(practices).toHaveCount(5);
+  await expect(
+    page.locator(".overview-capabilities button, .overview-capabilities a"),
+  ).toHaveCount(0);
 
   await page.locator("#project-llm .detail-toggle").click();
   const flowNodes = page.locator("#project-llm .project-flow-node");
   await expect(flowNodes.first()).toBeVisible();
   await expect(flowNodes).toHaveCount(5);
-
-  await modelPractice.click();
-  await expect(modelPractice).toHaveAttribute("aria-pressed", "false");
-  await expect(page.locator(".project-entry.is-practice-match")).toHaveCount(0);
 });
 
 test("wide project timeline follows project reading progress and supports navigation", async ({

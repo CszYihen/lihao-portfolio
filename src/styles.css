@@ -767,9 +767,6 @@ p {
   gap: 6px;
 }
 .overview-capabilities li {
-  display: contents;
-}
-.overview-capabilities button {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -780,37 +777,14 @@ p {
   border: 1px solid #e2e9da;
   border-radius: 999px;
   padding: 5px 10px;
-  cursor: pointer;
-  transition:
-    color 0.2s var(--ease-out),
-    background 0.2s var(--ease-out),
-    border-color 0.2s var(--ease-out),
-    box-shadow 0.2s var(--ease-out),
-    transform 0.2s var(--ease-out);
 }
-.overview-capabilities button::before {
+.overview-capabilities li::before {
   content: "";
   width: 5px;
   height: 5px;
   border-radius: 50%;
   background: #7da269;
   box-shadow: 0 0 0 3px #e5efdc;
-}
-.overview-capabilities button:hover {
-  color: #2d5333;
-  border-color: #c7d9b9;
-  background: #eef5e8;
-  transform: translateY(-1px);
-}
-.overview-capabilities button[aria-pressed="true"] {
-  color: #fff;
-  border-color: #4f7d41;
-  background: #4f7d41;
-  box-shadow: 0 5px 14px #3e682d2e;
-}
-.overview-capabilities button[aria-pressed="true"]::before {
-  background: #d8efc8;
-  box-shadow: 0 0 0 3px #ffffff26;
 }
 .overview-note {
   margin: 0;
@@ -1377,14 +1351,6 @@ html[data-motion="off"] .link-preview-float.is-popped {
     box-shadow 0.35s var(--ease-out),
     opacity 0.28s var(--ease-out),
     filter 0.28s var(--ease-out);
-}
-.project-entry.is-practice-match {
-  background: linear-gradient(90deg, #eff6e95c, transparent 64%);
-  box-shadow: -8px 0 0 -5px #76a15e;
-}
-.project-entry.is-practice-dimmed {
-  opacity: 0.42;
-  filter: saturate(0.55);
 }
 .project-list {
   position: relative;
@@ -5249,9 +5215,6 @@ html[data-motion="off"] *:after {
     gap: 1mm;
   }
   .overview-capabilities li {
-    display: contents;
-  }
-  .overview-capabilities button {
     padding: 0.6mm 1.4mm;
     font-size: 6.3pt;
   }
@@ -5577,10 +5540,6 @@ html[data-motion="off"] *:after {
   .project-flow-node {
     opacity: 1;
     transform: none;
-  }
-  .project-entry.is-practice-dimmed {
-    opacity: 1;
-    filter: none;
   }
   .project-icon {
     transform: none !important;
