@@ -6,6 +6,7 @@ import {
   useRef,
   useState,
   type CSSProperties,
+  type PointerEvent as ReactPointerEvent,
   type ReactNode,
 } from "react";
 import { flushSync } from "react-dom";
@@ -82,6 +83,55 @@ const navigation = [
 ];
 
 const easeOutExpo: [number, number, number, number] = [0.16, 1, 0.3, 1];
+
+function OverviewSignalCard({
+  icon,
+  label,
+  title,
+  description,
+}: {
+  icon: ReactNode;
+  label: string;
+  title: string;
+  description: string;
+}) {
+  const animated = useContext(AnimationContext);
+  const handlePointerMove = (event: ReactPointerEvent<HTMLLIElement>) => {
+    if (!animated || event.pointerType !== "mouse") return;
+    const card = event.currentTarget;
+    const bounds = card.getBoundingClientRect();
+    const x = (event.clientX - bounds.left) / bounds.width;
+    const y = (event.clientY - bounds.top) / bounds.height;
+    card.style.setProperty("--pointer-x", `${x * 100}%`);
+    card.style.setProperty("--pointer-y", `${y * 100}%`);
+    card.style.setProperty("--icon-x", `${(x - 0.5) * 6}px`);
+    card.style.setProperty("--icon-y", `${(y - 0.5) * 5}px`);
+    card.dataset.pointerActive = "true";
+  };
+  const resetPointer = (event: ReactPointerEvent<HTMLLIElement>) => {
+    const card = event.currentTarget;
+    card.style.setProperty("--icon-x", "0px");
+    card.style.setProperty("--icon-y", "0px");
+    delete card.dataset.pointerActive;
+  };
+
+  return (
+    <li
+      className="overview-signal-card"
+      onPointerMove={handlePointerMove}
+      onPointerLeave={resetPointer}
+    >
+      <span className="overview-signal-icon" aria-hidden="true">
+        {icon}
+      </span>
+      <div className="overview-signal-copy">
+        <span className="overview-signal-label">{label}</span>
+        <strong>{title}</strong>
+        <small>{description}</small>
+      </div>
+    </li>
+  );
+}
 
 /** Render [[term]] markers in project feature details as focus marks. */
 function emphasize(text: string) {
@@ -500,7 +550,17 @@ export default function App() {
   const toastTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lightboxTrigger = useRef<HTMLElement | null>(null);
   const projectListRef = useRef<HTMLDivElement>(null);
+  const educationTimelineRef = useRef<HTMLOListElement>(null);
+  const honorsSectionRef = useRef<HTMLElement>(null);
   const closeLightbox = useCallback(() => setLightbox(null), []);
+  const educationTimelineInView = useInView(educationTimelineRef, {
+    once: true,
+    amount: 0.35,
+  });
+  const honorsInView = useInView(honorsSectionRef, {
+    once: true,
+    amount: 0.16,
+  });
   const { scrollYProgress } = useScroll();
   const { scrollYProgress: projectTimelineProgress } = useScroll({
     target: projectListRef,
@@ -811,51 +871,24 @@ export default function App() {
                 <div className="overview-board">
                   <Reveal>
                     <ul className="overview-signals" aria-label="关键信息">
-                      <li>
-                        <span
-                          className="overview-signal-icon"
-                          aria-hidden="true"
-                        >
-                          <BookOpen size={15} />
-                        </span>
-                        <div className="overview-signal-copy">
-                          <span className="overview-signal-label">
-                            学术成果
-                          </span>
-                          <strong>IJCAI · CCF-A</strong>
-                          <small>第一作者 · CCF-A 会议论文</small>
-                        </div>
-                      </li>
-                      <li>
-                        <span
-                          className="overview-signal-icon"
-                          aria-hidden="true"
-                        >
-                          <BriefcaseBusiness size={15} />
-                        </span>
-                        <div className="overview-signal-copy">
-                          <span className="overview-signal-label">
-                            实习方向
-                          </span>
-                          <strong>Java 后端开发</strong>
-                          <small>逐电科技 · 企业项目实践</small>
-                        </div>
-                      </li>
-                      <li>
-                        <span
-                          className="overview-signal-icon"
-                          aria-hidden="true"
-                        >
-                          <Server size={15} />
-                        </span>
-                        <div className="overview-signal-copy">
-                          <span className="overview-signal-label">
-                            项目重心
-                          </span>
-                          <strong>物联 · 告警 · AI</strong>
-                          <small>5 项项目 · 设备到岸基协同</small>
-                        </div>
-                      </li>
+                      <OverviewSignalCard
+                        icon={<BookOpen size={15} />}
+                        label="学术成果"
+                        title="IJCAI · CCF-A"
+                        description="第一作者 · CCF-A 会议论文"
+                      />
+                      <OverviewSignalCard
+                        icon={<BriefcaseBusiness size={15} />}
+                        label="实习方向"
+                        title="Java 后端开发"
+                        description="逐电科技 · 企业项目实践"
+                      />
+                      <OverviewSignalCard
+                        icon={<Server size={15} />}
+                        label="项目重心"
+                        title="物联 · 告警 · AI"
+                        description="5 项项目 · 设备到岸基协同"
+                      />
                     </ul>
                   </Reveal>
                   <Reveal>
@@ -958,6 +991,7 @@ export default function App() {
                           <span className="education-card-en">ACADEMIC</span>
                         </div>
                         <ol
+                          ref={educationTimelineRef}
                           className="education-timeline"
                           aria-label="教育经历时间轴"
                         >
@@ -974,11 +1008,15 @@ export default function App() {
                                   <motion.span
                                     className="education-timeline-line"
                                     initial={animated ? { scaleY: 0 } : false}
-                                    whileInView={{ scaleY: 1 }}
-                                    viewport={{ once: true, amount: 0.7 }}
+                                    animate={{
+                                      scaleY:
+                                        !animated || educationTimelineInView
+                                          ? 1
+                                          : 0,
+                                    }}
                                     transition={{
-                                      duration: animated ? 0.65 : 0,
-                                      delay: animated ? 0.3 : 0,
+                                      duration: animated ? 0.82 : 0,
+                                      delay: animated ? 0.16 : 0,
                                       ease: easeOutExpo,
                                     }}
                                   />
@@ -990,52 +1028,135 @@ export default function App() {
                                       ? { scale: 0.2, opacity: 0 }
                                       : false
                                   }
-                                  whileInView={{ scale: 1, opacity: 1 }}
-                                  viewport={{ once: true, amount: 0.7 }}
+                                  animate={{
+                                    scale:
+                                      !animated || educationTimelineInView
+                                        ? 1
+                                        : 0.2,
+                                    opacity:
+                                      !animated || educationTimelineInView
+                                        ? 1
+                                        : 0,
+                                  }}
                                   transition={{
                                     duration: animated ? 0.42 : 0,
                                     delay: animated
                                       ? educationIndex === 0
-                                        ? 0.05
-                                        : 0.78
+                                        ? 0.04
+                                        : 0.76
                                       : 0,
                                     ease: easeOutExpo,
                                   }}
                                 />
                               </div>
-                              <motion.article
-                                initial={
-                                  animated
-                                    ? { opacity: 0, x: 12, filter: "blur(3px)" }
-                                    : false
-                                }
-                                whileInView={{
-                                  opacity: 1,
-                                  x: 0,
-                                  filter: "blur(0px)",
-                                }}
-                                viewport={{ once: true, amount: 0.55 }}
-                                transition={{
-                                  duration: animated ? 0.52 : 0,
-                                  delay: animated
-                                    ? educationIndex === 0
-                                      ? 0.12
-                                      : 0.86
-                                    : 0,
-                                  ease: easeOutExpo,
-                                }}
-                              >
+                              <article>
                                 <div className="education-heading">
-                                  <h4>{item.school}</h4>
-                                  <time>{item.period}</time>
+                                  <motion.h4
+                                    initial={
+                                      animated ? { opacity: 0, x: 8 } : false
+                                    }
+                                    animate={{
+                                      opacity:
+                                        !animated || educationTimelineInView
+                                          ? 1
+                                          : 0,
+                                      x:
+                                        !animated || educationTimelineInView
+                                          ? 0
+                                          : 8,
+                                    }}
+                                    transition={{
+                                      duration: animated ? 0.42 : 0,
+                                      delay: animated
+                                        ? educationIndex === 0
+                                          ? 0.12
+                                          : 0.84
+                                        : 0,
+                                      ease: easeOutExpo,
+                                    }}
+                                  >
+                                    {item.school}
+                                  </motion.h4>
+                                  <motion.time
+                                    initial={
+                                      animated ? { opacity: 0, x: 7 } : false
+                                    }
+                                    animate={{
+                                      opacity:
+                                        !animated || educationTimelineInView
+                                          ? 1
+                                          : 0,
+                                      x:
+                                        !animated || educationTimelineInView
+                                          ? 0
+                                          : 7,
+                                    }}
+                                    transition={{
+                                      duration: animated ? 0.4 : 0,
+                                      delay: animated
+                                        ? educationIndex === 0
+                                          ? 0.24
+                                          : 0.96
+                                        : 0,
+                                      ease: easeOutExpo,
+                                    }}
+                                  >
+                                    {item.period}
+                                  </motion.time>
                                   {item.current && (
-                                    <span className="education-status">
+                                    <motion.span
+                                      className="education-status"
+                                      initial={
+                                        animated
+                                          ? { opacity: 0, scale: 0.9 }
+                                          : false
+                                      }
+                                      animate={{
+                                        opacity:
+                                          !animated || educationTimelineInView
+                                            ? 1
+                                            : 0,
+                                        scale:
+                                          !animated || educationTimelineInView
+                                            ? 1
+                                            : 0.9,
+                                      }}
+                                      transition={{
+                                        duration: animated ? 0.36 : 0,
+                                        delay: animated ? 0.3 : 0,
+                                        ease: easeOutExpo,
+                                      }}
+                                    >
                                       在读
-                                    </span>
+                                    </motion.span>
                                   )}
                                 </div>
                                 <div className="education-meta">
-                                  <div className="education-study">
+                                  <motion.div
+                                    className="education-study"
+                                    initial={
+                                      animated ? { opacity: 0, y: 5 } : false
+                                    }
+                                    animate={{
+                                      opacity:
+                                        !animated || educationTimelineInView
+                                          ? 1
+                                          : 0,
+                                      y:
+                                        !animated || educationTimelineInView
+                                          ? 0
+                                          : 5,
+                                    }}
+                                    transition={{
+                                      duration: animated ? 0.44 : 0,
+                                      delay: animated
+                                        ? educationIndex === 0
+                                          ? 0.36
+                                          : 1.08
+                                        : 0,
+                                      ease: easeOutExpo,
+                                    }}
+                                  >
                                     <span className="degree">
                                       {item.degree}
                                     </span>
@@ -1050,9 +1171,9 @@ export default function App() {
                                         {mark.label}
                                       </span>
                                     ))}
-                                  </div>
+                                  </motion.div>
                                 </div>
-                              </motion.article>
+                              </article>
                             </li>
                           ))}
                         </ol>
@@ -1153,7 +1274,9 @@ export default function App() {
                           ，并支持 <mark className="focus-mark">人工审核</mark>
                           ；在 MAS
                           推进船端告警与船岸协同。另参与面向工地场景的无感考勤，完成{" "}
-                          <mark className="focus-mark">人脸识别自动打卡</mark>、{" "}
+                          <mark className="focus-mark">
+                            人脸识别自动打卡
+                          </mark>、{" "}
                           <mark className="focus-mark">
                             陌生人标记与非法进入告警
                           </mark>
@@ -1270,7 +1393,11 @@ export default function App() {
                   ))}
                 </div>
               </section>
-              <section className="resume-section education-section" id="honors">
+              <section
+                ref={honorsSectionRef}
+                className="resume-section education-section"
+                id="honors"
+              >
                 <Reveal>
                   <SectionTitle
                     number="04"
@@ -1288,12 +1415,14 @@ export default function App() {
                       </div>
                       {publications.map((paper) => (
                         <article key={paper.title} className="publication-card">
-                          {animated && (
+                          {animated && honorsInView && (
                             <BorderBeam
+                              className="honor-border-sweep"
                               colorFrom="#c9a227"
                               colorTo="#2f6b52"
-                              duration={18}
+                              duration={1.7}
                               size={120}
+                              delay={0.08}
                             />
                           )}
                           <div className="publication-mark" aria-hidden="true">
@@ -1312,6 +1441,16 @@ export default function App() {
                       ))}
                     </div>
                     <aside className="scholarship-card" aria-label="奖学金">
+                      {animated && honorsInView && (
+                        <BorderBeam
+                          className="honor-border-sweep"
+                          colorFrom="#d2b45d"
+                          colorTo="#6e955c"
+                          duration={1.7}
+                          size={110}
+                          delay={0.28}
+                        />
+                      )}
                       <div className="scholarship-card-heading">
                         <Award size={15} />
                         <h4>奖学金</h4>
@@ -1341,6 +1480,16 @@ export default function App() {
                 </Reveal>
                 <Reveal delay={0.1} variant="fadeUp">
                   <div className="competition-card">
+                    {animated && honorsInView && (
+                      <BorderBeam
+                        className="honor-border-sweep"
+                        colorFrom="#9fbd88"
+                        colorTo="#4f7340"
+                        duration={1.7}
+                        size={130}
+                        delay={0.5}
+                      />
+                    )}
                     <div className="competition-card-heading">
                       <Award size={17} />
                       <h4>竞赛与荣誉</h4>

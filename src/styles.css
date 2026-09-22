@@ -628,6 +628,13 @@ p {
   gap: 10px;
 }
 .overview-signals > li {
+  --pointer-x: 50%;
+  --pointer-y: 50%;
+  --icon-x: 0px;
+  --icon-y: 0px;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -641,6 +648,42 @@ p {
     0 1px 0 #ffffffd9 inset,
     0 7px 20px #314b2510;
 }
+.overview-signal-card::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: radial-gradient(
+    120px circle at var(--pointer-x) var(--pointer-y),
+    #9fc68b99,
+    #dcebd333 48%,
+    transparent 75%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s var(--ease-out);
+}
+.overview-signal-card[data-pointer-active="true"]::after {
+  opacity: 0.72;
+}
+html[data-motion="off"] .overview-signal-card::after {
+  display: none;
+}
+html[data-motion="off"] .overview-signal-icon {
+  transform: none;
+  transition: none;
+}
+.overview-signal-card > * {
+  position: relative;
+  z-index: 1;
+}
 
 .overview-signal-icon {
   width: 36px;
@@ -653,6 +696,9 @@ p {
   border: 1px solid #d2e0c4;
   color: #4a6f3d;
   flex-shrink: 0;
+  transform: translate3d(var(--icon-x), var(--icon-y), 0);
+  transition: transform 0.24s var(--ease-out);
+  will-change: transform;
 }
 .overview-signal-icon svg {
   width: 17px;
@@ -2311,6 +2357,8 @@ html[data-motion="off"] .at-image-btn::before {
   font-weight: 550;
 }
 .scholarship-card {
+  position: relative;
+  overflow: hidden;
   min-width: 0;
   border-radius: 14px;
   padding: 14px 14px 12px;
@@ -2318,12 +2366,36 @@ html[data-motion="off"] .at-image-btn::before {
   border: 1px solid #e4dcc0;
 }
 .competition-card {
+  position: relative;
+  overflow: hidden;
   margin-top: 16px;
   min-width: 0;
   border-radius: 14px;
   padding: 14px 16px 12px;
   background: #fff;
   border: 1px solid #d8e3cf;
+}
+.border-beam.honor-border-sweep::after {
+  animation-name: honor-border-sweep;
+  animation-timing-function: cubic-bezier(0.22, 0.75, 0.24, 1);
+  animation-iteration-count: 1;
+  animation-fill-mode: both;
+}
+@keyframes honor-border-sweep {
+  0% {
+    opacity: 0;
+    offset-distance: 0%;
+  }
+  12% {
+    opacity: 1;
+  }
+  82% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    offset-distance: 100%;
+  }
 }
 .scholarship-card ul,
 .competition-card ul {

@@ -525,7 +525,58 @@ test("system reduced motion overrides an enabled preference", async ({
   await expect(gallery.locator(".at-controls")).toBeVisible();
 });
 
-test("core practices stay static and expanded flow is readable", async ({ page }) => {
+test("overview cards use subtle pointer depth and academic effects run once", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/");
+
+  const signalCard = page.locator(".overview-signal-card").first();
+  const bounds = await signalCard.boundingBox();
+  expect(bounds).not.toBeNull();
+  await page.mouse.move(bounds!.x + bounds!.width * 0.82, bounds!.y + 18);
+  await expect(signalCard).toHaveAttribute("data-pointer-active", "true");
+  const pointerStyle = await signalCard.evaluate((element) => ({
+    iconX: (element as HTMLElement).style.getPropertyValue("--icon-x"),
+    pointerX: (element as HTMLElement).style.getPropertyValue("--pointer-x"),
+  }));
+  expect(pointerStyle.iconX).not.toBe("0px");
+  expect(pointerStyle.pointerX).not.toBe("50%");
+  await page.mouse.move(5, 5);
+  await expect(signalCard).not.toHaveAttribute("data-pointer-active", "true");
+
+  await page.locator("#education").scrollIntoViewIfNeeded();
+  await expect
+    .poll(() =>
+      page.locator(".education-timeline-line").evaluate((element) => {
+        const transform = getComputedStyle(element).transform;
+        return transform === "none" ? 1 : new DOMMatrix(transform).m22;
+      }),
+    )
+    .toBeGreaterThan(0.95);
+  await expect(page.locator(".education-heading h4").first()).toBeVisible();
+  await expect(page.locator(".education-study").last()).toBeVisible();
+
+  await page.locator("#honors").scrollIntoViewIfNeeded();
+  await expect(page.locator("#honors .honor-border-sweep")).toHaveCount(3);
+  await expect
+    .poll(() =>
+      page
+        .locator("#honors .honor-border-sweep")
+        .first()
+        .evaluate((element) =>
+          element
+            .getAnimations({ subtree: true })
+            .some((animation) => animation.playState === "finished"),
+        ),
+    )
+    .toBe(true);
+});
+
+test("core practices stay static and expanded flow is readable", async ({
+  page,
+}) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
 
