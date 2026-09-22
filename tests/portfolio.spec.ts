@@ -160,6 +160,12 @@ test("resume content, five projects and category filtering", async ({
     "配置化大模型复检",
   );
   await expect(page.locator("#project-llm")).toContainText(
+    "工厂 + 策略模式",
+  );
+  await expect(page.locator("#project-llm")).toContainText(
+    "新增模型只需扩展策略",
+  );
+  await expect(page.locator("#project-llm")).toContainText(
     "人工审核与任务协同",
   );
   await expect(page.locator("#project-mas")).toContainText(
@@ -209,7 +215,8 @@ test("resume content, five projects and category filtering", async ({
     .click();
   await expect(page.locator(".project-entry")).toHaveCount(5);
   await expect(page).toHaveURL(/#project-mas$/);
-  await expect(page.locator("#project-cloud89")).toContainText("独立完成");
+  await expect(page.locator("#project-cloud89")).toContainText("参与开发");
+  await expect(page.locator("body")).not.toContainText("独立完成");
 });
 
 test("each project expands and collapses its technical details", async ({

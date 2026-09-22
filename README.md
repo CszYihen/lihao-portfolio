@@ -65,7 +65,7 @@ cloud89: projectImagesFromGlob(cloud89Modules, "projects/cloud89", "船舶管理
 | `public/resume-lihao.pdf`  | 与网页内容同步的可下载 PDF 简历        |
 | `docs/CONTENT_SOURCES.md`  | 简历信息与项目源码依据                 |
 
-企业项目归入广州逐电科技有限公司实习经历，并按本人确认统一标注“独立完成”；Yihen Drama 单列为个人 GitHub 项目。未编造实习起止时间或业务性能指标。
+企业项目归入广州逐电科技有限公司实习经历，统一标注为“参与开发”；Yihen Drama 单列为个人 GitHub 项目。未编造实习起止时间或业务性能指标。
 
 ## 构建与部署
 

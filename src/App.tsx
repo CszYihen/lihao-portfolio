@@ -106,7 +106,8 @@ const projectSummaryTerms: Record<string, string[]> = {
   llm: [
     "AI 图片复检中台",
     "减少误报",
-    "Qwen",
+    "工厂与策略模式",
+    "不同模型厂商",
     "人工审核",
     "Redis API Key",
     "SSE",
@@ -875,7 +876,7 @@ export default function App() {
                               >
                                 无感考勤
                               </LinkPreview>
-                              ，并独立完成 AI 短剧开源项目{" "}
+                              ，并完成 AI 短剧开源项目{" "}
                               <LinkPreview
                                 url="#project-drama"
                                 isStatic
