@@ -60,6 +60,18 @@ test("resume content, five projects and category filtering", async ({
     "IJCAI · CCF-A",
   );
   await expect(page.locator("#overview .overview-panel")).toBeVisible();
+  await expect(page.locator("#overview .overview-main")).toContainText(
+    "核心实践",
+  );
+  await expect(page.locator("#overview .overview-capabilities")).toContainText(
+    "协议接入",
+  );
+  await expect(page.locator("#overview .overview-capabilities")).toContainText(
+    "异步编排",
+  );
+  await expect(page.locator("#overview .overview-capabilities")).toContainText(
+    "告警闭环",
+  );
   await expect(page.locator("#overview #education.education-card")).toBeVisible();
   await expect(page.locator("#education .education-status")).toContainText(
     "在读",

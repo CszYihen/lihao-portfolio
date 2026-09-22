@@ -879,13 +879,13 @@ export default function App() {
                           </div>
                         </div>
                         <div className="overview-block">
-                          <span className="overview-block-label">能力覆盖</span>
+                          <span className="overview-block-label">核心实践</span>
                           <ul className="overview-capabilities">
-                            <li>设备接入</li>
+                            <li>协议接入</li>
+                            <li>异步编排</li>
+                            <li>告警闭环</li>
                             <li>实时通信</li>
-                            <li>告警处理</li>
-                            <li>岸基业务</li>
-                            <li>AI 研判</li>
+                            <li>模型接入</li>
                           </ul>
                         </div>
                         <div className="overview-note">
