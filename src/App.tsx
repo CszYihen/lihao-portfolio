@@ -15,6 +15,8 @@ import {
   motion,
   useInView,
   useScroll,
+  useSpring,
+  useTransform,
 } from "motion/react";
 import {
   ArrowDownToLine,
@@ -485,8 +487,26 @@ export default function App() {
   const [toast, setToast] = useState("");
   const toastTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lightboxTrigger = useRef<HTMLElement | null>(null);
+  const projectListRef = useRef<HTMLDivElement>(null);
   const closeLightbox = useCallback(() => setLightbox(null), []);
   const { scrollYProgress } = useScroll();
+  const { scrollYProgress: projectTimelineProgress } = useScroll({
+    target: projectListRef,
+    offset: ["start 46%", "end 54%"],
+  });
+  const smoothProjectTimelineProgress = useSpring(projectTimelineProgress, {
+    stiffness: 140,
+    damping: 28,
+    mass: 0.28,
+  });
+  const renderedTimelineProgress = animated
+    ? smoothProjectTimelineProgress
+    : projectTimelineProgress;
+  const projectTimelineCursor = useTransform(
+    renderedTimelineProgress,
+    [0, 1],
+    ["0%", "100%"],
+  );
   useEffect(() => {
     document.documentElement.dataset.motion = animated ? "on" : "off";
     try {
@@ -1203,7 +1223,17 @@ export default function App() {
                     显示 {filtered.length} 个项目
                   </span>
                 </Reveal>
-                <div className="project-list">
+                <div className="project-list" ref={projectListRef}>
+                  <div className="project-timeline-motion-track" aria-hidden="true">
+                    <motion.span
+                      className="project-timeline-progress"
+                      style={{ scaleY: renderedTimelineProgress }}
+                    />
+                    <motion.span
+                      className="project-timeline-cursor"
+                      style={{ top: projectTimelineCursor }}
+                    />
+                  </div>
                   {filtered.map((project, index) => (
                     <Reveal
                       key={project.id}

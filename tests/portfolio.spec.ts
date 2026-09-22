@@ -512,6 +512,25 @@ test("system reduced motion overrides an enabled preference", async ({
   await expect(gallery.locator(".at-controls")).toBeVisible();
 });
 
+test("wide project timeline follows project reading progress", async ({ page }) => {
+  await page.setViewportSize({ width: 1920, height: 1000 });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  const track = page.locator(".project-timeline-motion-track");
+  const cursor = page.locator(".project-timeline-cursor");
+  await expect(track).toBeVisible();
+  await page.locator("#project-cloud89").scrollIntoViewIfNeeded();
+  const start = await cursor.evaluate((element) =>
+    (element as HTMLElement).offsetTop,
+  );
+  await page.locator("#project-drama").scrollIntoViewIfNeeded();
+  await expect
+    .poll(() =>
+      cursor.evaluate((element) => (element as HTMLElement).offsetTop),
+    )
+    .toBeGreaterThan(start + 100);
+});
+
 for (const width of [320, 390, 768, 1024, 1440, 1920]) {
   test(`${width}px responsive resume and gallery have no overflow or broken images`, async ({
     page,

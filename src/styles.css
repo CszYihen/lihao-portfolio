@@ -1355,6 +1355,9 @@ html[data-motion="off"] .link-preview-float.is-popped {
 .project-list {
   position: relative;
 }
+.project-timeline-motion-track {
+  display: none;
+}
 .project-list::before {
   display: none;
 }
@@ -2761,6 +2764,37 @@ html[data-motion="off"] .at-image-btn::before {
       #cfc5dc 100%
     );
     box-shadow: 0 0 12px #719b5d24;
+  }
+  .project-timeline-motion-track {
+    position: absolute;
+    z-index: 1;
+    top: 27px;
+    right: -63px;
+    bottom: 29px;
+    display: block;
+    width: 3px;
+    pointer-events: none;
+  }
+  .project-timeline-progress {
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #4f863e 0%, #80a966 76%, #816d96 100%);
+    box-shadow: 0 0 12px #5f914f4d;
+    transform-origin: top;
+  }
+  .project-timeline-cursor {
+    position: absolute;
+    left: 50%;
+    width: 13px;
+    height: 13px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    background: #4f823f;
+    box-shadow:
+      0 0 0 4px #dcebd3,
+      0 0 20px #558c4266;
+    transform: translate(-50%, -50%);
   }
   .project-timeline-marker {
     position: absolute;
@@ -5432,6 +5466,9 @@ html[data-motion="off"] *:after {
 }
 
 @media print {
+  .project-timeline-motion-track {
+    display: none !important;
+  }
   .project-list::before {
     display: none;
   }
