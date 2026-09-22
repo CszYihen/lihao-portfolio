@@ -105,11 +105,11 @@ const projectSummaryTerms: Record<string, string[]> = {
   llm: ["AI 图片复检中台", "Qwen", "Redis API Key", "SSE", "人工审核"],
   mas: ["滑动窗口", "冷却规则", "JT808", "熔断", "9212 回执"],
   attendance: [
-    "场景分流",
-    "上报间隔控制",
-    "监管任务",
+    "工地现场",
+    "无感打卡",
+    "陌生人记录",
+    "非法进入",
     "失败任务恢复",
-    "历史图片清理",
   ],
   drama: [
     "RabbitMQ",
@@ -856,7 +856,7 @@ export default function App() {
                                 height={138}
                                 onClick={() => setFilter("all")}
                               >
-                                无感考勤与人员同步
+                                无感考勤
                               </LinkPreview>
                               ，并独立完成 AI 短剧开源项目{" "}
                               <LinkPreview
@@ -1081,15 +1081,15 @@ export default function App() {
                           等岸基能力；在复检云平台落地{" "}
                           <mark className="focus-mark">自动化大模型复检</mark>
                           ，并支持 <mark className="focus-mark">人工审核</mark>
-                          ；在 MAS 推进船端告警与船岸协同。另参与无感考勤，按{" "}
+                          ；在 MAS 推进船端告警与船岸协同。另参与面向工地场景的无感考勤，完成{" "}
                           <mark className="focus-mark">
-                            人脸 / 闸机等场景分流告警
+                            人脸识别自动打卡
                           </mark>
-                          ，完成{" "}
+                          、{" "}
                           <mark className="focus-mark">
-                            陌生人建档与进场记录
+                            陌生人标记与非法进入告警
                           </mark>
-                          及人员同步。
+                          及人员、人脸数据同步。
                         </p>
                         <div className="internship-project-links">
                           {projects

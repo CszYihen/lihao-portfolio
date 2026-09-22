@@ -6,7 +6,7 @@ const projectCases = [
   { id: "cloud89", title: "船舶管理云平台", images: 5 },
   { id: "llm", title: "大模型复检云平台", images: 6 },
   { id: "mas", title: "MAS 船端告警系统", images: 6 },
-  { id: "attendance", title: "无感考勤与人员同步", images: 5 },
+  { id: "attendance", title: "无感考勤", images: 5 },
   { id: "drama", title: "Yihen Drama", images: 4 },
 ];
 
@@ -144,6 +144,12 @@ test("resume content, five projects and category filtering", async ({
     await expect(page.locator(`#project-${project.id} h3`)).toContainText(
       project.title,
     );
+  await expect(page.locator("#project-attendance")).toContainText(
+    "工地人员无感打卡",
+  );
+  await expect(page.locator("#project-attendance")).toContainText(
+    "陌生人与非法进入告警",
+  );
   for (const project of projectCases) {
     expect(
       await page
