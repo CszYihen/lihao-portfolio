@@ -126,6 +126,24 @@ test("resume content, five projects and category filtering", async ({
   await expect(page.locator(".publication-mark")).toContainText("IJCAI");
   await expect(page.locator(".publication-mark")).toContainText("CCF-A");
   await expect(page.locator(".project-entry")).toHaveCount(5);
+  await expect(page.locator(".project-timeline-marker")).toHaveCount(5);
+  await expect(page.locator("#project-cloud89 .project-timeline-marker")).toHaveAttribute(
+    "aria-label",
+    "2026年8月至今",
+  );
+  await expect(page.locator("#project-attendance .project-timeline-marker")).toContainText(
+    "2026.04",
+  );
+  await expect(page.locator("#project-mas .project-timeline-marker")).toContainText(
+    "2026.07",
+  );
+  await expect(page.locator("#project-llm .project-timeline-marker")).toContainText(
+    "2026.07",
+  );
+  await expect(page.locator("#project-drama .project-timeline-marker")).toHaveAttribute(
+    "aria-label",
+    "2026年1月至3月",
+  );
   await expect(page.locator(".project-entry").nth(3)).toHaveAttribute(
     "id",
     "project-attendance",

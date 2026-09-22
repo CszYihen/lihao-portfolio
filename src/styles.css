@@ -642,6 +642,7 @@ p {
     0 1px 0 #ffffffd9 inset,
     0 7px 20px #314b2510;
 }
+
 .overview-signal-icon {
   width: 36px;
   height: 36px;
@@ -1350,6 +1351,104 @@ html[data-motion="off"] .link-preview-float.is-popped {
   transition:
     background 0.25s var(--ease-out),
     box-shadow 0.35s var(--ease-out);
+}
+.project-list {
+  --timeline-line-x: 84px;
+  --timeline-content-offset: 106px;
+  position: relative;
+}
+.project-list::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: var(--timeline-line-x);
+  top: 27px;
+  bottom: 29px;
+  width: 1px;
+  background: linear-gradient(
+    180deg,
+    #8eb17b 0%,
+    #bfd5b1 70%,
+    #cfc5dc 100%
+  );
+  box-shadow: 0 0 12px #719b5d24;
+}
+.project-list > .project-timeline-item {
+  position: relative;
+  padding-left: var(--timeline-content-offset);
+}
+.project-timeline-marker {
+  position: absolute;
+  z-index: 2;
+  left: calc(-1 * var(--timeline-content-offset));
+  top: 24px;
+  width: 76px;
+  padding-right: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+  color: #43623d;
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.project-timeline-marker::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  right: -13px;
+  width: 10px;
+  height: 10px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: #6c975a;
+  box-shadow:
+    0 0 0 3px #e0ecd8,
+    0 3px 10px #496c3930;
+  transition:
+    transform 0.35s var(--ease-out),
+    box-shadow 0.35s var(--ease-out),
+    background 0.35s var(--ease-out);
+}
+.project-timeline-marker.personal {
+  color: #746585;
+}
+.project-timeline-marker.personal::after {
+  background: #8a789e;
+  box-shadow:
+    0 0 0 3px #ebe6f1,
+    0 3px 10px #6656752b;
+}
+.project-timeline-end {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #778572;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.project-timeline-end i {
+  width: 10px;
+  height: 1px;
+  background: currentColor;
+}
+.project-entry.is-reading .project-timeline-marker::after {
+  background: #4e7d3d;
+  transform: scale(1.18);
+  box-shadow:
+    0 0 0 4px #dcebd3,
+    0 0 18px #5989454f;
+}
+.project-entry.is-reading .project-timeline-marker.personal::after {
+  background: #756188;
+  box-shadow:
+    0 0 0 4px #e8e1ef,
+    0 0 18px #715c8647;
 }
 .project-entry.is-reading .project-icon {
   border-color: #aac995;
@@ -2833,6 +2932,46 @@ html[data-motion="off"] .at-image-btn::before {
   }
 }
 @media (max-width: 980px) {
+  .project-list {
+    --timeline-line-x: 6px;
+    --timeline-content-offset: 24px;
+  }
+  .project-list::before {
+    top: 25px;
+    bottom: 26px;
+  }
+  .project-timeline-marker {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: max-content;
+    flex-direction: row;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 8px;
+    padding: 4px 9px;
+    border: 1px solid #d8e4d0;
+    border-radius: 999px;
+    background: #f4f8f0;
+    font-size: 10px;
+    line-height: 1;
+  }
+  .project-timeline-marker::after {
+    top: 50%;
+    right: auto;
+    left: -23px;
+    transform: translateY(-50%);
+  }
+  .project-entry.is-reading .project-timeline-marker::after {
+    transform: translateY(-50%) scale(1.18);
+  }
+  .project-timeline-marker.personal {
+    border-color: #e1d9ea;
+    background: #f6f3f9;
+  }
+  .project-timeline-end {
+    font-size: 10px;
+  }
   .project-description,
   .project-highlights p {
     overflow-wrap: anywhere;
@@ -5294,5 +5433,41 @@ html[data-motion="off"] *:after {
   }
   .project-icon::after {
     display: none !important;
+  }
+}
+
+@media print {
+  .project-list::before {
+    display: none;
+  }
+  .project-list > .project-timeline-item {
+    padding-left: 0;
+  }
+  .project-timeline-marker {
+    position: absolute;
+    left: auto;
+    right: 0;
+    top: 2.8mm;
+    width: auto;
+    padding: 0;
+    flex-direction: row;
+    align-items: center;
+    gap: 1.2mm;
+    color: #50634d;
+    font-size: 6.4pt;
+    line-height: 1;
+  }
+  .project-timeline-marker::after {
+    display: none;
+  }
+  .project-timeline-end {
+    gap: 1mm;
+    font-size: 6.2pt;
+  }
+  .project-timeline-end i {
+    width: 2mm;
+  }
+  .project-entry-header {
+    padding-right: 27mm;
   }
 }

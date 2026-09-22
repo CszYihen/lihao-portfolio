@@ -324,6 +324,16 @@ function ProjectEntry({
           : undefined
       }
     >
+      <time
+        className={`project-timeline-marker${project.category === "personal" ? " personal" : ""}`}
+        aria-label={project.period.label}
+      >
+        <span>{project.period.start}</span>
+        <span className="project-timeline-end">
+          <i aria-hidden="true" />
+          {project.period.end}
+        </span>
+      </time>
       <div className="project-entry-header">
         <motion.div
           className={`project-icon ${project.category === "personal" ? "personal" : ""}`}
@@ -1197,6 +1207,7 @@ export default function App() {
                   {filtered.map((project, index) => (
                     <Reveal
                       key={project.id}
+                      className="project-timeline-item"
                       delay={Math.min(index * 0.06, 0.24)}
                       variant="scaleIn"
                       amount={0.12}

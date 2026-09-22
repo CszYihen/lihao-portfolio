@@ -3,6 +3,11 @@ export type ProjectCategory = "company" | "personal";
 export type Project = {
   id: string;
   number: string;
+  period: {
+    start: string;
+    end: string;
+    label: string;
+  };
   title: string;
   english: string;
   category: ProjectCategory;
@@ -109,6 +114,7 @@ export const projects: Project[] = [
   {
     id: "cloud89",
     number: "01",
+    period: { start: "2026.08", end: "至今", label: "2026年8月至今" },
     title: "船舶管理云平台",
     english: "MARITIME INTELLIGENCE",
     category: "company",
@@ -145,6 +151,7 @@ export const projects: Project[] = [
   {
     id: "llm",
     number: "02",
+    period: { start: "2026.07", end: "2026.08", label: "2026年7月至8月" },
     title: "大模型复检云平台",
     english: "LLM REVIEW CLOUD",
     category: "company",
@@ -181,6 +188,7 @@ export const projects: Project[] = [
   {
     id: "mas",
     number: "03",
+    period: { start: "2026.05", end: "2026.07", label: "2026年5月至7月" },
     title: "MAS 船端告警系统",
     english: "MARITIME ALARM SYSTEM",
     category: "company",
@@ -217,6 +225,7 @@ export const projects: Project[] = [
   {
     id: "attendance",
     number: "04",
+    period: { start: "2026.04", end: "2026.05", label: "2026年4月至5月" },
     title: "无感考勤",
     english: "SITE ATTENDANCE",
     category: "company",
@@ -253,6 +262,7 @@ export const projects: Project[] = [
   {
     id: "drama",
     number: "05",
+    period: { start: "2026.01", end: "2026.03", label: "2026年1月至3月" },
     title: "Yihen Drama",
     english: "AI SHORT DRAMA STUDIO",
     category: "personal",
