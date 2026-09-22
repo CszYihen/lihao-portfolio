@@ -512,7 +512,7 @@ test("system reduced motion overrides an enabled preference", async ({
   await expect(gallery.locator(".at-controls")).toBeVisible();
 });
 
-for (const width of [320, 390, 768, 1024, 1440]) {
+for (const width of [320, 390, 768, 1024, 1440, 1920]) {
   test(`${width}px responsive resume and gallery have no overflow or broken images`, async ({
     page,
   }) => {
@@ -521,6 +521,20 @@ for (const width of [320, 390, 768, 1024, 1440]) {
     await page.goto("/");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     await expectNoPageOverflow(page, `${width}px resume`);
+    if (width === 1920) {
+      const timelinePlacement = await page
+        .locator("#project-cloud89")
+        .evaluate((entry) => {
+          const project = entry.getBoundingClientRect();
+          const marker = entry
+            .querySelector(".project-timeline-marker")!
+            .getBoundingClientRect();
+          return { projectRight: project.right, markerLeft: marker.left };
+        });
+      expect(timelinePlacement.markerLeft).toBeGreaterThan(
+        timelinePlacement.projectRight,
+      );
+    }
     if (width < 700) {
       const profileSpacing = await page.evaluate(() => {
         const badge = document.querySelector(".graduate-badge")!.getBoundingClientRect();
@@ -541,10 +555,13 @@ for (const width of [320, 390, 768, 1024, 1440]) {
         await expectLoaded(image);
       await expectNoPageOverflow(page, `${width}px ${project.id}`);
     }
+    const readableSelector =
+      width >= 1700
+        ? "h1, h2, h3, .profile-contact, .project-description, .project-highlights p"
+        : "h1, h2, h3, .profile-contact, .project-entry, .resume-paper, .project-description, .project-highlights p";
     const overflow = await page
-      .locator(
-        "h1, h2, h3, .profile-contact, .project-entry, .resume-paper, .project-description, .project-highlights p",
-      )
+      // Wide screens intentionally place timeline markers outside the paper.
+      .locator(readableSelector)
       .evaluateAll((elements) =>
         elements
           .filter(
