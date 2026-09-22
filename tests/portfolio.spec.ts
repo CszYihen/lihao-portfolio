@@ -150,6 +150,30 @@ test("resume content, five projects and category filtering", async ({
   await expect(page.locator("#project-attendance")).toContainText(
     "陌生人与非法进入告警",
   );
+  await expect(page.locator("#project-cloud89")).toContainText(
+    "船舶定位与轨迹管理",
+  );
+  await expect(page.locator("#project-cloud89")).toContainText(
+    "实时与历史视频回放",
+  );
+  await expect(page.locator("#project-llm")).toContainText(
+    "配置化大模型复检",
+  );
+  await expect(page.locator("#project-llm")).toContainText(
+    "人工审核与任务协同",
+  );
+  await expect(page.locator("#project-mas")).toContainText(
+    "场景化告警规则判定",
+  );
+  await expect(page.locator("#project-mas")).toContainText(
+    "弱网下的岸基上报闭环",
+  );
+  await expect(page.locator("#project-drama")).toContainText(
+    "角色、场景与分镜工作台",
+  );
+  await expect(page.locator("#project-drama")).toContainText(
+    "多类型模型统一接入",
+  );
   for (const project of projectCases) {
     expect(
       await page

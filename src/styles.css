@@ -2833,6 +2833,15 @@ html[data-motion="off"] .at-image-btn::before {
   }
 }
 @media (max-width: 980px) {
+  .project-description,
+  .project-highlights p {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+  .project-summary-key,
+  .project-highlights .focus-mark {
+    padding-inline: 0;
+  }
   .project-body.with-gallery {
     display: flex;
     flex-direction: column;

@@ -96,14 +96,29 @@ function emphasize(text: string) {
 
 const projectSummaryTerms: Record<string, string[]> = {
   cloud89: [
+    "岸基船舶管理平台",
+    "实时位置",
     "Netty / JT808",
-    "位置轨迹",
-    "告警证据",
+    "告警查询处置",
     "JT1078",
     "FFmpeg / HLS",
   ],
-  llm: ["AI 图片复检中台", "Qwen", "Redis API Key", "SSE", "人工审核"],
-  mas: ["滑动窗口", "冷却规则", "JT808", "熔断", "9212 回执"],
+  llm: [
+    "AI 图片复检中台",
+    "减少误报",
+    "Qwen",
+    "人工审核",
+    "Redis API Key",
+    "SSE",
+  ],
+  mas: [
+    "本地安全告警系统",
+    "滑动窗口",
+    "重复告警",
+    "JT808",
+    "熔断",
+    "9212 回执",
+  ],
   attendance: [
     "工地现场",
     "无感打卡",
@@ -112,6 +127,8 @@ const projectSummaryTerms: Record<string, string[]> = {
     "失败任务恢复",
   ],
   drama: [
+    "AI 短剧创作平台",
+    "角色、场景、分镜与视频资产",
     "RabbitMQ",
     "Qdrant",
     "策略与工厂",
