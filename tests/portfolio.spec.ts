@@ -676,6 +676,20 @@ test("wide project timeline follows project reading progress and supports naviga
       cursor.evaluate((element) => (element as HTMLElement).offsetTop),
     )
     .toBeGreaterThan(start + 100);
+  const backToTop = page.getByRole("button", { name: "返回页面顶部" });
+  await expect(backToTop).toBeVisible();
+  const floatingControls = await page.evaluate(() => {
+    const timeline = document
+      .querySelector(".project-timeline-motion-track")!
+      .getBoundingClientRect();
+    const button = document
+      .querySelector(".back-to-top")!
+      .getBoundingClientRect();
+    return { timelineRight: timeline.right, buttonLeft: button.left };
+  });
+  expect(floatingControls.buttonLeft).toBeGreaterThan(
+    floatingControls.timelineRight + 20,
+  );
   const cloudMarker = page.getByRole("button", {
     name: "定位到船舶管理云平台，2026年8月至今",
   });

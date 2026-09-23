@@ -3028,6 +3028,9 @@ html[data-motion="off"] .at-image-btn::before {
   }
 }
 @media (min-width: 1700px) {
+  .back-to-top {
+    right: max(24px, calc((100vw - 1400px) / 2 - 150px));
+  }
   .project-highlights .focus-mark {
     padding-inline: 0;
   }
