@@ -352,9 +352,11 @@ function SectionTitle({
 function ProjectEntry({
   project,
   onOpen,
+  deepLinked,
 }: {
   project: Project;
   onOpen: (title: string, images: ProjectImage[], index: number) => void;
+  deepLinked?: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
   const animated = useContext(AnimationContext);
@@ -368,7 +370,7 @@ function ProjectEntry({
   return (
     <motion.article
       ref={entryRef}
-      className={`project-entry${isReading ? " is-reading" : ""}${hasEntered ? " has-entered" : ""}`}
+      className={`project-entry${isReading ? " is-reading" : ""}${hasEntered ? " has-entered" : ""}${deepLinked ? " is-deep-linked" : ""}`}
       id={`project-${project.id}`}
       whileHover={
         animated
@@ -547,7 +549,16 @@ export default function App() {
     index: number;
   } | null>(null);
   const [toast, setToast] = useState("");
+  const [copiedContact, setCopiedContact] = useState<
+    "email" | "phone" | "github" | null
+  >(null);
+  const [deepLinkedProject, setDeepLinkedProject] = useState<string | null>(
+    null,
+  );
+  const [showBackToTop, setShowBackToTop] = useState(false);
   const toastTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const contactCopyTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const deepLinkTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lightboxTrigger = useRef<HTMLElement | null>(null);
   const projectListRef = useRef<HTMLDivElement>(null);
   const educationTimelineRef = useRef<HTMLOListElement>(null);
@@ -601,9 +612,51 @@ export default function App() {
     });
     return () => observer.disconnect();
   }, []);
+  useEffect(() => {
+    const revealHashProject = () => {
+      const matched = window.location.hash.match(/^#project-([\w-]+)$/);
+      const projectId = matched?.[1];
+      if (!projectId || !projects.some((project) => project.id === projectId))
+        return;
+      setFilter("all");
+      setDeepLinkedProject(projectId);
+      requestAnimationFrame(() =>
+        document
+          .getElementById(`project-${projectId}`)
+          ?.scrollIntoView({ block: "start" }),
+      );
+      if (deepLinkTimeout.current) clearTimeout(deepLinkTimeout.current);
+      deepLinkTimeout.current = setTimeout(
+        () => setDeepLinkedProject(null),
+        1150,
+      );
+    };
+    revealHashProject();
+    window.addEventListener("hashchange", revealHashProject);
+    return () => window.removeEventListener("hashchange", revealHashProject);
+  }, []);
+  useEffect(() => {
+    let visible = false;
+    const updateBackToTop = () => {
+      const nextVisible = window.scrollY > window.innerHeight * 2;
+      if (nextVisible !== visible) {
+        visible = nextVisible;
+        setShowBackToTop(nextVisible);
+      }
+    };
+    updateBackToTop();
+    window.addEventListener("scroll", updateBackToTop, { passive: true });
+    window.addEventListener("resize", updateBackToTop);
+    return () => {
+      window.removeEventListener("scroll", updateBackToTop);
+      window.removeEventListener("resize", updateBackToTop);
+    };
+  }, []);
   useEffect(
     () => () => {
       if (toastTimeout.current) clearTimeout(toastTimeout.current);
+      if (contactCopyTimeout.current) clearTimeout(contactCopyTimeout.current);
+      if (deepLinkTimeout.current) clearTimeout(deepLinkTimeout.current);
     },
     [],
   );
@@ -616,6 +669,21 @@ export default function App() {
     }
     if (toastTimeout.current) clearTimeout(toastTimeout.current);
     toastTimeout.current = setTimeout(() => setToast(""), 3200);
+  };
+  const copyProfileContact = async (
+    type: "email" | "phone" | "github",
+    value: string,
+  ) => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopiedContact(type);
+    } catch {
+      setToast(`复制失败，请手动复制：${value}`);
+      if (toastTimeout.current) clearTimeout(toastTimeout.current);
+      toastTimeout.current = setTimeout(() => setToast(""), 3200);
+    }
+    if (contactCopyTimeout.current) clearTimeout(contactCopyTimeout.current);
+    contactCopyTimeout.current = setTimeout(() => setCopiedContact(null), 1800);
   };
   const openGallery = (
     title: string,
@@ -759,25 +827,82 @@ export default function App() {
                     </div>
                   </dl>
                   <div className="profile-contact">
-                    <a href={`mailto:${profile.email}`}>
-                      <Mail size={15} />
-                      <span>{profile.email}</span>
-                      <ArrowUpRight size={13} />
-                    </a>
-                    <a href={`tel:${profile.phone}`}>
-                      <Phone size={14} />
-                      <span>{profile.phone}</span>
-                    </a>
-                    <a
-                      className="profile-github"
-                      href={profile.github}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      <Github size={14} />
-                      <span>github.com/CszYihen</span>
-                      <ArrowUpRight size={13} />
-                    </a>
+                    {[
+                      {
+                        id: "email" as const,
+                        value: profile.email,
+                        href: `mailto:${profile.email}`,
+                        label: profile.email,
+                        icon: <Mail size={15} />,
+                      },
+                      {
+                        id: "phone" as const,
+                        value: profile.phone,
+                        href: `tel:${profile.phone}`,
+                        label: profile.phone,
+                        icon: <Phone size={14} />,
+                      },
+                      {
+                        id: "github" as const,
+                        value: profile.github,
+                        href: profile.github,
+                        label: "github.com/CszYihen",
+                        icon: <Github size={14} />,
+                        external: true,
+                      },
+                    ].map((contact) => (
+                      <div
+                        className={`profile-contact-row${contact.id === "github" ? " profile-github-row" : ""}`}
+                        key={contact.id}
+                      >
+                        <a
+                          className={
+                            contact.id === "github"
+                              ? "profile-github"
+                              : undefined
+                          }
+                          href={contact.href}
+                          target={contact.external ? "_blank" : undefined}
+                          rel={contact.external ? "noreferrer" : undefined}
+                        >
+                          {contact.icon}
+                          <span>{contact.label}</span>
+                          {contact.id !== "phone" && <ArrowUpRight size={13} />}
+                        </a>
+                        <button
+                          type="button"
+                          className="profile-contact-copy"
+                          aria-label={`复制${contact.id === "email" ? "邮箱" : contact.id === "phone" ? "电话" : "GitHub 地址"}`}
+                          onClick={() =>
+                            copyProfileContact(contact.id, contact.value)
+                          }
+                        >
+                          {copiedContact === contact.id ? (
+                            <Check size={13} />
+                          ) : (
+                            <Copy size={13} />
+                          )}
+                        </button>
+                        <AnimatePresence>
+                          {copiedContact === contact.id && (
+                            <motion.span
+                              className="profile-contact-feedback"
+                              role="status"
+                              initial={
+                                animated
+                                  ? { opacity: 0, x: 4, scale: 0.96 }
+                                  : false
+                              }
+                              animate={{ opacity: 1, x: 0, scale: 1 }}
+                              exit={{ opacity: 0, x: 3, scale: 0.97 }}
+                              transition={{ duration: animated ? 0.2 : 0 }}
+                            >
+                              已复制
+                            </motion.span>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    ))}
                   </div>
                   <a
                     className="profile-download"
@@ -1388,7 +1513,11 @@ export default function App() {
                       variant="scaleIn"
                       amount={0.12}
                     >
-                      <ProjectEntry project={project} onOpen={openGallery} />
+                      <ProjectEntry
+                        project={project}
+                        onOpen={openGallery}
+                        deepLinked={deepLinkedProject === project.id}
+                      />
                     </Reveal>
                   ))}
                 </div>
@@ -1554,6 +1683,46 @@ export default function App() {
               <ArrowUp size={12} />
             </a>
           </footer>
+          <AnimatePresence>
+            {showBackToTop && (
+              <motion.button
+                type="button"
+                className="back-to-top"
+                aria-label="返回页面顶部"
+                initial={animated ? { opacity: 0, y: 10, scale: 0.9 } : false}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 8, scale: 0.92 }}
+                transition={{
+                  duration: animated ? 0.28 : 0,
+                  ease: easeOutExpo,
+                }}
+                onClick={() =>
+                  window.scrollTo({
+                    top: 0,
+                    behavior: animated ? "smooth" : "auto",
+                  })
+                }
+              >
+                <svg viewBox="0 0 44 44" aria-hidden="true">
+                  <circle
+                    className="back-to-top-track"
+                    cx="22"
+                    cy="22"
+                    r="19"
+                  />
+                  <motion.circle
+                    className="back-to-top-progress"
+                    cx="22"
+                    cy="22"
+                    r="19"
+                    pathLength={1}
+                    style={{ pathLength: scrollYProgress }}
+                  />
+                </svg>
+                <ArrowUp size={17} aria-hidden="true" />
+              </motion.button>
+            )}
+          </AnimatePresence>
           <AnimatePresence>
             {toast && (
               <motion.div

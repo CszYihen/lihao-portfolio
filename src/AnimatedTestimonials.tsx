@@ -41,11 +41,14 @@ export function AnimatedTestimonials({
   const [inView, setInView] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [focused, setFocused] = useState(false);
+  const [showIndexFeedback, setShowIndexFeedback] = useState(false);
   const [pageVisible, setPageVisible] = useState(() => !document.hidden);
   const [compact, setCompact] = useState(() => window.innerWidth <= 740);
   const [stageRatio, setStageRatio] = useState(2);
   const root = useRef<HTMLDivElement>(null);
   const timer = useRef<number | null>(null);
+  const feedbackTimer = useRef<number | null>(null);
+  const hasActiveChanged = useRef(false);
   const imageRatios = useRef(new Map<string, number>());
   const count = testimonials.length;
   const canAutoplay =
@@ -132,6 +135,21 @@ export function AnimatedTestimonials({
   useEffect(() => {
     const ratio = imageRatios.current.get(testimonials[active]?.image);
     if (ratio) setStageRatio(ratio);
+    if (!hasActiveChanged.current) {
+      hasActiveChanged.current = true;
+      return;
+    }
+    setShowIndexFeedback(true);
+    if (feedbackTimer.current !== null)
+      window.clearTimeout(feedbackTimer.current);
+    feedbackTimer.current = window.setTimeout(
+      () => setShowIndexFeedback(false),
+      900,
+    );
+    return () => {
+      if (feedbackTimer.current !== null)
+        window.clearTimeout(feedbackTimer.current);
+    };
   }, [active, testimonials]);
 
   useEffect(() => {
@@ -220,13 +238,29 @@ export function AnimatedTestimonials({
                       if (isActive) setStageRatio(ratio);
                     }}
                   />
-                  <span className="at-expand">
+                  <span className="at-expand" aria-hidden="true">
                     <Expand size={15} />
+                    <span>点击查看大图</span>
                   </span>
                 </button>
               </motion.div>
             );
           })}
+        </AnimatePresence>
+        <AnimatePresence>
+          {showIndexFeedback && (
+            <motion.span
+              className="at-index-feedback"
+              aria-hidden="true"
+              initial={motionOn ? { opacity: 0, y: -4, scale: 0.96 } : false}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -3, scale: 0.98 }}
+              transition={{ duration: motionOn ? 0.2 : 0 }}
+            >
+              {String(active + 1).padStart(2, "0")} /{" "}
+              {String(count).padStart(2, "0")}
+            </motion.span>
+          )}
         </AnimatePresence>
       </div>
 

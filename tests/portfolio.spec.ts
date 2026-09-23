@@ -437,6 +437,25 @@ test("original PDF download, email copy, contact links and print action", async 
   await expect(
     page.locator(".profile-contact").getByRole("link", { name: "19118415578" }),
   ).toHaveAttribute("href", "tel:19118415578");
+  await expect(
+    page.locator(".profile-contact").getByRole("link", {
+      name: "github.com/CszYihen",
+    }),
+  ).toHaveAttribute("href", "https://github.com/CszYihen");
+  for (const contact of [
+    { button: "复制邮箱", value: email },
+    { button: "复制电话", value: "19118415578" },
+    { button: "复制GitHub 地址", value: "https://github.com/CszYihen" },
+  ]) {
+    const row = page
+      .locator(".profile-contact-row")
+      .filter({ has: page.getByRole("button", { name: contact.button }) });
+    await row.getByRole("button", { name: contact.button }).click();
+    await expect(row.getByRole("status")).toHaveText("已复制");
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
+      contact.value,
+    );
+  }
   const resume = page.getByRole("link", { name: "下载 PDF 简历" });
   const [download] = await Promise.all([
     page.waitForEvent("download"),
@@ -451,7 +470,7 @@ test("original PDF download, email copy, contact links and print action", async 
   const pdf = await response.body();
   expect(pdf.subarray(0, 4).toString()).toBe("%PDF");
   expect(pdf.equals(await readFile("public/resume-lihao.pdf"))).toBe(true);
-  await page.getByRole("button", { name: "复制邮箱", exact: true }).click();
+  await page.locator(".resume-footer .copy-button").click();
   await expect(
     page.getByRole("status").filter({ hasText: "邮箱已复制" }),
   ).toBeVisible();
@@ -523,6 +542,52 @@ test("system reduced motion overrides an enabled preference", async ({
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(page.locator("html")).toHaveAttribute("data-motion", "off");
   await expect(gallery.locator(".at-controls")).toBeVisible();
+});
+
+test("deep links, gallery hints and reading progress return control improve navigation", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/#project-llm");
+
+  const linkedProject = page.locator("#project-llm");
+  await expect(linkedProject).toHaveClass(/is-deep-linked/);
+  await expect(linkedProject).toBeInViewport();
+  await expect(linkedProject).not.toHaveClass(/is-deep-linked/, {
+    timeout: 2500,
+  });
+
+  const gallery = page.locator("#project-cloud89 .animated-testimonials");
+  await gallery.scrollIntoViewIfNeeded();
+  const preview = gallery.locator('.at-card[data-active="true"] .at-image-btn');
+  await preview.hover();
+  await expect(preview.locator(".at-expand")).toContainText("点击查看大图");
+  await expect(preview.locator(".at-expand")).toBeVisible();
+  await expect
+    .poll(() =>
+      preview.locator("img").evaluate((image) => {
+        const transform = getComputedStyle(image).transform;
+        return transform === "none" ? 1 : new DOMMatrix(transform).a;
+      }),
+    )
+    .toBeGreaterThan(1.005);
+  await gallery.getByRole("button", { name: "下一张" }).click();
+  await expect(gallery.locator(".at-index-feedback")).toHaveText("02 / 05");
+
+  await page.locator("#honors").scrollIntoViewIfNeeded();
+  const backToTop = page.getByRole("button", { name: "返回页面顶部" });
+  await expect(backToTop).toBeVisible();
+  await expect
+    .poll(() =>
+      backToTop
+        .locator(".back-to-top-progress")
+        .getAttribute("stroke-dasharray"),
+    )
+    .toMatch(/0\.[5-9]/);
+  await backToTop.click();
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThan(5);
+  await expect(backToTop).toHaveCount(0);
 });
 
 test("overview cards use subtle pointer depth and academic effects run once", async ({
