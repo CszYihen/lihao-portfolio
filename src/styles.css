@@ -4880,6 +4880,27 @@ html[data-motion="off"] .at-image-btn::before {
   color: #1f3329;
   letter-spacing: -0.015em;
 }
+.publication-title-link {
+  color: inherit;
+  text-decoration-color: transparent;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  cursor: zoom-in;
+  transition:
+    color 180ms var(--ease-out),
+    text-decoration-color 180ms var(--ease-out);
+}
+.publication-title-link:hover,
+.publication-title-link:focus-visible {
+  color: #3f6a38;
+  text-decoration-color: #9fba87;
+}
+.publication-title-link:focus-visible {
+  outline: 2px solid #86a875;
+  outline-offset: 4px;
+  border-radius: 3px;
+}
 .publication-note {
   margin: 0;
   font-size: 13px;

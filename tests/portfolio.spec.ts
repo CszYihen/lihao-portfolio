@@ -143,6 +143,18 @@ test("resume content, five projects and category filtering", async ({
   await expect(page.locator(".competition-card")).toContainText("F 奖");
   await expect(page.locator(".publication-mark")).toContainText("IJCAI");
   await expect(page.locator(".publication-mark")).toContainText("CCF-A");
+  const paperLink = page.getByRole("link", {
+    name: /悬浮预览论文首页/,
+  });
+  await expect(paperLink).toHaveAttribute(
+    "href",
+    "https://www.ijcai.org/proceedings/2026/0146.pdf",
+  );
+  await paperLink.hover();
+  await expect(page.locator(".link-preview-float img")).toHaveAttribute(
+    "src",
+    /ijcai-paper-first-page.*\.webp/,
+  );
   await expect(page.locator(".project-entry")).toHaveCount(5);
   await expect(page.locator(".project-timeline-marker")).toHaveCount(5);
   await expect(

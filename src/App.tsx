@@ -63,6 +63,7 @@ import { Lightbox, ProjectGallery, type ProjectImage } from "./Gallery";
 import { projectMedia } from "./media";
 import { useSystemReducedMotion } from "./useSystemReducedMotion";
 import companyPreview from "./assets/company/zhudian-home.webp";
+import paperFirstPage from "./assets/papers/ijcai-paper-first-page.webp";
 
 const AnimationContext = createContext(true);
 const asset = (src: string) =>
@@ -1592,7 +1593,21 @@ export default function App() {
                             <span className="pub-tier">{paper.tier}</span>
                           </div>
                           <div className="publication-body">
-                            <h4 className="publication-title">{paper.title}</h4>
+                            <h4 className="publication-title">
+                              <LinkPreview
+                                url="https://www.ijcai.org/proceedings/2026/0146.pdf"
+                                isStatic
+                                imageSrc={paperFirstPage}
+                                width={310}
+                                height={401}
+                                linkClassName="publication-title-link"
+                                target="_blank"
+                                rel="noreferrer"
+                                aria-label={`${paper.title}，悬浮预览论文首页，点击打开论文 PDF`}
+                              >
+                                {paper.title}
+                              </LinkPreview>
+                            </h4>
                             <div className="publication-meta">
                               <span className="pub-role">{paper.role}</span>
                               <span className="pub-year">{paper.year}</span>
