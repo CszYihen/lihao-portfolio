@@ -2530,8 +2530,8 @@ html[data-motion="off"] .at-image-btn::before {
 .competition-list {
   list-style: none;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 7px;
+  grid-template-columns: 1fr;
+  gap: 6px;
   margin: 0;
   padding: 0;
 }
@@ -2550,9 +2550,6 @@ html[data-motion="off"] .at-image-btn::before {
     border-color 0.22s var(--ease-out),
     background 0.22s var(--ease-out),
     transform 0.22s var(--ease-out);
-}
-.competition-list li:last-child {
-  grid-column: 1 / -1;
 }
 .competition-list li:hover {
   border-color: #cdddc2;
@@ -2575,9 +2572,10 @@ html[data-motion="off"] .at-image-btn::before {
 }
 .competition-main {
   min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+  display: grid;
+  grid-template-columns: 74px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
 }
 .competition-meta {
   color: #7b8a75;
@@ -2609,11 +2607,9 @@ html[data-motion="off"] .at-image-btn::before {
   background: #f8efcf;
 }
 @media (max-width: 740px) {
-  .competition-list {
-    grid-template-columns: 1fr;
-  }
-  .competition-list li:last-child {
-    grid-column: auto;
+  .competition-main {
+    grid-template-columns: 62px minmax(0, 1fr);
+    gap: 7px;
   }
 }
 .scholarship-main {
