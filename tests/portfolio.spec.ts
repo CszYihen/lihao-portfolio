@@ -122,6 +122,9 @@ test("resume content, five projects and category filtering", async ({
   );
   await expect(page.locator(".academic-split")).toBeVisible();
   await expect(page.locator(".academic-split .scholarship-card")).toContainText(
+    "一等学业奖学金",
+  );
+  await expect(page.locator(".academic-split .scholarship-card")).toContainText(
     "国家励志奖学金",
   );
   await expect(page.locator(".academic-split .scholarship-card")).toContainText(
@@ -130,7 +133,8 @@ test("resume content, five projects and category filtering", async ({
   await expect(page.locator(".academic-split .scholarship-card")).toContainText(
     "一等国家助学金",
   );
-  await expect(page.locator(".scholarship-stage-grad")).toContainText(
+  await expect(page.locator(".scholarship-stage-grad")).toHaveCount(2);
+  await expect(page.locator(".scholarship-stage-grad").first()).toContainText(
     "研究生期间",
   );
   await expect(

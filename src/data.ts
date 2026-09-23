@@ -48,6 +48,12 @@ export const education = [
 /** Scholarships / grants shown in the honors section. */
 export const scholarships = [
   {
+    title: "一等学业奖学金",
+    year: "2026",
+    stage: "grad" as const,
+    stageLabel: "研究生期间",
+  },
+  {
     title: "三等学业奖学金",
     year: "2025",
     stage: "grad" as const,
