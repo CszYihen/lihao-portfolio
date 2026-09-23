@@ -191,6 +191,39 @@ const projectSummaryTerms: Record<string, string[]> = {
   ],
 };
 
+const competitionHonors = [
+  {
+    meta: "2022",
+    title: "数维杯国际大学生数学建模挑战赛",
+    award: "F 奖",
+    tone: "highlight",
+  },
+  {
+    meta: "2022",
+    title: "第十二届亚太地区大学生数学建模竞赛",
+    award: "三等奖",
+    tone: "standard",
+  },
+  {
+    meta: "程序设计",
+    title: "第十三届蓝桥杯湖南赛区 C/C++ 程序设计大学 B 组",
+    award: "三等奖",
+    tone: "standard",
+  },
+  {
+    meta: "人工智能",
+    title: "第十五届中国大学生计算机设计大赛人工智能挑战赛",
+    award: "省级三等奖",
+    tone: "highlight",
+  },
+  {
+    meta: "2023",
+    title: "全国大学生数学建模竞赛湖南赛区",
+    award: "三等奖",
+    tone: "standard",
+  },
+] as const;
+
 function highlightProjectSummary(project: Project) {
   const terms = projectSummaryTerms[project.id] ?? [];
   if (!terms.length) return project.summary;
@@ -1622,34 +1655,31 @@ export default function App() {
                     <div className="competition-card-heading">
                       <Award size={17} />
                       <h4>竞赛与荣誉</h4>
-                      <span>CONTESTS</span>
+                      <span>CONTESTS · 05</span>
                     </div>
-                    <ul>
-                      <li>
-                        <span>2022 年数维杯国际大学生数学建模挑战赛</span>
-                        <strong>F 奖</strong>
-                      </li>
-                      <li>
-                        <span>2022 年第十二届亚太地区大学生数学建模竞赛</span>
-                        <strong>三等奖</strong>
-                      </li>
-                      <li>
-                        <span>
-                          第十三届蓝桥杯湖南赛区 C/C++ 程序设计大学 B 组
-                        </span>
-                        <strong>三等奖</strong>
-                      </li>
-                      <li>
-                        <span>
-                          第十五届中国大学生计算机设计大赛人工智能挑战赛
-                        </span>
-                        <strong>省级三等奖</strong>
-                      </li>
-                      <li>
-                        <span>2023 年全国大学生数学建模竞赛湖南赛区</span>
-                        <strong>三等奖</strong>
-                      </li>
-                    </ul>
+                    <ol className="competition-list">
+                      {competitionHonors.map((item, index) => (
+                        <li key={item.title}>
+                          <span
+                            className="competition-index"
+                            aria-hidden="true"
+                          >
+                            {String(index + 1).padStart(2, "0")}
+                          </span>
+                          <div className="competition-main">
+                            <span className="competition-meta">
+                              {item.meta}
+                            </span>
+                            <span className="competition-title">
+                              {item.title}
+                            </span>
+                          </div>
+                          <strong className={`competition-award ${item.tone}`}>
+                            {item.award}
+                          </strong>
+                        </li>
+                      ))}
+                    </ol>
                   </div>
                   <div className="certificates">
                     <span>语言与证书</span>
