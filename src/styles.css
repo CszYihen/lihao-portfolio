@@ -2655,26 +2655,85 @@ html[data-motion="off"] .at-image-btn::before {
 }
 .certificates {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
-  margin-top: 16px;
-  padding: 12px 0 22px;
+  gap: 16px;
+  margin-top: 14px;
+  padding: 11px 13px;
+  border: 1px solid #dce7d4;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #fbfcf9, #f4f8f0);
 }
-.certificates > span {
-  font-size: 13px;
-  color: #5f7066;
-  margin-right: 6px;
-  font-weight: 550;
+.certificates-heading {
+  min-width: 146px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding-right: 15px;
+  border-right: 1px solid #dce6d5;
 }
-.certificates > b {
-  font-size: 13px;
-  font-weight: 500;
-  color: #3f5a3c;
-  border: 1px solid #d5e2c8;
-  background: #f6f9f2;
-  border-radius: 6px;
-  padding: 6px 11px;
+.certificates-icon {
+  width: 29px;
+  height: 29px;
+  flex: 0 0 29px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #d1e0c6;
+  border-radius: 8px;
+  color: #4f7340;
+  background: #e9f2e2;
+}
+.certificates-heading > div {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.certificates-heading strong {
+  color: #304c35;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.certificates-heading small {
+  color: #83907e;
+  font-size: 8px;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+}
+.certificates ul {
+  list-style: none;
+  min-width: 0;
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+}
+.certificates li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 9px 5px 6px;
+  border: 1px solid #d2dfc8;
+  border-radius: 999px;
+  color: #3f5843;
+  background: #fff;
+  box-shadow: 0 2px 7px #3146260a;
+  font-size: 11px;
+  font-weight: 570;
+  line-height: 1.35;
+  white-space: nowrap;
+}
+.certificates li > span {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #527a44;
+  background: #eaf3e3;
 }
 .resume-footer {
   margin: 4px -36px 0;
@@ -3632,11 +3691,7 @@ html[data-motion="off"] .at-image-btn::before {
     font-size: 15px;
   }
   .certificates {
-    gap: 6px;
-  }
-  .certificates > span {
-    flex-basis: 100%;
-    margin-bottom: 4px;
+    gap: 10px;
   }
   .page-footer {
     width: calc(100% - 36px);
@@ -4091,11 +4146,19 @@ html[data-motion="off"] .at-image-btn::before {
   .honors-block strong {
     font-size: 12px;
   }
-  .certificates > b {
-    font-size: 12px;
+  .certificates {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 9px;
   }
-  .certificates > span {
-    font-size: 13px;
+  .certificates-heading {
+    min-width: 0;
+    padding: 0 0 8px;
+    border-right: 0;
+    border-bottom: 1px solid #dce6d5;
+  }
+  .certificates li {
+    font-size: 11px;
   }
   .resume-footer {
     margin-top: 0;
@@ -4421,8 +4484,8 @@ html[data-motion="off"] .at-image-btn::before {
   .copy-button svg {
     width: 12px;
   }
-  .certificates > b {
-    font-size: 8px;
+  .certificates li {
+    font-size: 10px;
   }
 }
 @media (max-width: 355px) {
@@ -5355,8 +5418,8 @@ html[data-motion="off"] *:after {
   .certificates {
     padding-bottom: 10px;
   }
-  .certificates > b,
-  .certificates > span {
+  .certificates-heading strong,
+  .certificates li {
     font-size: 7pt;
     color: #555;
   }
@@ -5865,15 +5928,34 @@ html[data-motion="off"] *:after {
     margin-top: 2mm;
   }
   .certificates {
-    display: flex;
+    display: grid;
+    grid-template-columns: auto 1fr;
     align-items: center;
     gap: 1.5mm;
     padding: 2mm 0 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
   }
-  .certificates > b,
-  .certificates > span {
+  .certificates-heading {
+    min-width: 0;
+    padding: 0 2mm 0 0;
+    border-right: 0.3mm solid #d8dfd0;
+    border-bottom: 0;
+  }
+  .certificates-icon,
+  .certificates-heading small,
+  .certificates li > span {
+    display: none;
+  }
+  .certificates ul {
+    gap: 1mm;
+  }
+  .certificates li {
     padding: 0.8mm 1.5mm;
     font-size: 6.2pt;
+    border-radius: 1mm;
+    box-shadow: none;
   }
   .resume-footer {
     margin-top: 2mm;

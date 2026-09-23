@@ -1682,10 +1682,29 @@ export default function App() {
                     </ol>
                   </div>
                   <div className="certificates">
-                    <span>语言与证书</span>
-                    <b>CET-6 英语六级</b>
-                    <b>全国计算机等级考试二级</b>
-                    <b>普通话二级乙等</b>
+                    <div className="certificates-heading">
+                      <span className="certificates-icon" aria-hidden="true">
+                        <FileText size={14} />
+                      </span>
+                      <div>
+                        <strong>语言与证书</strong>
+                        <small>CERTIFICATES</small>
+                      </div>
+                    </div>
+                    <ul aria-label="语言与证书列表">
+                      {[
+                        "CET-6 英语六级",
+                        "全国计算机等级考试二级",
+                        "普通话二级乙等",
+                      ].map((certificate) => (
+                        <li key={certificate}>
+                          <span aria-hidden="true">
+                            <Check size={11} strokeWidth={2.5} />
+                          </span>
+                          {certificate}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </Reveal>
               </section>
