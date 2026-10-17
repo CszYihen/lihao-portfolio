@@ -556,7 +556,7 @@ p {
 }
 .resume-paper {
   min-width: 0;
-  background: var(--paper);
+  background: color-mix(in srgb, var(--paper) 58%, rgb(var(--ambient-base)) 42%);
   border: 1px solid var(--line);
   border-radius: 14px;
   box-shadow: 0 10px 36px #2a3a2208;
@@ -5195,6 +5195,7 @@ html[data-motion="off"] *:after {
     display: none;
   }
   .resume-paper {
+    background: var(--paper);
     border: 0;
     border-radius: 0;
     box-shadow: none;
