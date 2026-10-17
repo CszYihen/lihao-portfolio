@@ -2,7 +2,7 @@
 
 本文件供简历所有者维护、核对网站文案，不作为公开展示页面。以下结论来自本地源代码与依赖清单，不包含内部地址或凭据。
 
-共同边界：用户已明确这些项目属于广州逐电科技有限公司实习经历，并在 2026-09-20 确认由本人独立完成，因此网站可使用“独立完成”。代码可以证明项目具备某项能力，但不能单独证明上线规模、业务收益或实习起止日期；不添加未经验证的性能、用户量或提升比例。
+共同边界：用户已明确企业项目属于广州逐电科技有限公司实习经历，并在 2026-10-17 再次确认 MAS 与船舶管理云平台由本人独立开发、MAS 持续至今。代码可以证明项目具备某项能力，但不能单独证明上线规模或业务收益；不添加未经验证的性能、用户量或提升比例。
 
 以下来源路径均相对于 `D:/Yihen/IdeaProject`；行号为本次核对时的定位参考。
 
@@ -90,11 +90,14 @@
 | 告警附件异步上传与幂等处理 | `jt808/service/AlarmEvidenceAsyncWriter.java:34` | 独立线程池上传对象存储，通过告警 ID 与文件名识别重复附件，处理唯一键冲突，记录上传状态与 SHA-256；不扩大为零丢失保证。 |
 | JWT、Redis 会话与组织数据权限 | `filter/JwtAuthFilter.java:43`；`service/md/MdDataScopeSupport.java:25` | 可说明验签、滑动续期、组织树查询范围与写入权限检查。 |
 | JT1078 历史视频回放和 HLS 转码 | `service/VideoHistoryService.java:49`；`video/history/HlsTranscodeSession.java:19` | 可说明建立回放会话、将 H.264 / H.265 裸流转为 HLS，以及拖动回放后的转码会话重置；不声称覆盖所有设备兼容性。 |
+| 全国平台 Kafka 出站可靠性 | `kafka/outbox/NationalKafkaOutboxService.java`、`NationalKafkaAfterCommitDispatcher.java`、`NationalKafkaOutboxWorker.java`、`NationalKafkaOutboxSender.java` | 事务 Outbox、提交后触发、后台补偿、异常发送状态恢复与退避重试均有实现；全国平台账号与联调验收未完成。 |
+| 航行数据聚合 | `kafka/navigate/NationalNavigateAggregateScheduler.java`；`docs/phases/M6.8-船舶航行数据.md` | 对脏船周期组装最新航行快照，减少高频位置逐条出站；本地已落地，全国平台联调待账号。 |
+| 值班、统计与视频墙 | `service/impl/DutyShiftServiceImpl.java`、`controller/DutyController.java`、`service/stat/impl/StatExcelExportServiceImpl.java`；`docs/phases/M8.1-船舶统计.md`、`M8.3-视频墙.md` | 值班台账、异常识别、统计 API/导出与视频墙 MVP 已编码；统计前端仍可切 mock，不能写成完整生产联调。 |
 
 ### 必须保留的边界
 
 - 用户明确本项目属于广州逐电科技有限公司实习经历，并确认由本人独立完成。
-- PRD 将全国监管平台对接列为二期，不能写成已完成生产监管对接。Kafka 桥接代码存在，但 README 标明默认关闭。
+- 全国平台的本地 Outbox 与航行数据出站实现已补齐，但全国平台联调待账号，不能写成已完成生产监管对接。
 - PRD 中的运营目标和服务指标不是已核实的业绩，不作为个人量化成果。
 
 ## MAS 单船抓拍告警分析系统
@@ -115,6 +118,8 @@
 | 策略化规则与 Redis 滑动窗口 | `service/impl/AiPushServiceImpl.java:420`；`ai/strategy/camera/CameraBlockedAlarmStrategy.java:141` | 按算法选择处理策略；通过 ZSet 维护时间窗口和触发记录，支持配置化规则。 |
 | 并发重复告警控制 | `ai/strategy/AbstractAiAlarmStrategy.java:72`、`:121` | 按任务与通道使用 JVM 细粒度锁，将冷却检查、告警生成、冷却标记串行化，Redis 保存冷却状态。 |
 | 平台级熔断与成功回执闭环 | `jt808/service/impl/JT808AlertCircuitBreakerServiceImpl.java:28`；`jt808/service/impl/JT808AlertReportAckServiceImpl.java:31` | 连续失败后打开熔断，到期半开试探；收到 9212 成功回执后更新状态、清理 pending 数据并恢复熔断。 |
+| 区域围栏本地评估与音柱播报 | `service/impl/AreaFenceSyncServiceImpl.java`、`areafence/AreaFenceEvalJob.java`；`mas/masback/docs/area-fence/README.md` | 配置按版本幂等接收，按定位周期评估靠近、进入、离开与限速等规则，并记录播报；89 云平台向船端的自动下发仍是待联调项。 |
+| 定位异常与巡检计时控制 | `ai/strategy/builtin/positionanomaly/PositionAnomalyEvaluator.java`、`ai/strategy/inspection/UnscheduledInspectionScheduleJob.java` | 连续无有效定位触发内置告警；状态不匹配或靠泊时抑制巡检计时，恢复后再经过完整周期，避免旧计时立即触发误报。 |
 
 ### 必须保留的边界
 

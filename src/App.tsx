@@ -152,7 +152,8 @@ const projectSummaryTerms: Record<string, string[]> = {
     "岸基船舶管理平台",
     "实时位置",
     "Netty / JT808",
-    "告警查询处置",
+    "全国平台 Kafka 出站可靠投递",
+    "航行快照聚合",
     "JT1078",
     "FFmpeg / HLS",
   ],
@@ -169,6 +170,8 @@ const projectSummaryTerms: Record<string, string[]> = {
     "本地安全告警系统",
     "滑动窗口",
     "重复告警",
+    "区域围栏本地判定",
+    "连续定位缺失告警",
     "JT808",
     "熔断",
     "9212 回执",
@@ -457,7 +460,7 @@ function ProjectEntry({
           <div className="project-subtitle">
             <span>{categoryMeta[project.category].subtitle}</span>
             <i />
-            <span>{categoryMeta[project.category].role}</span>
+            <span>{project.role ?? categoryMeta[project.category].role}</span>
           </div>
         </div>
         <div className="project-heading-actions">
@@ -1422,24 +1425,14 @@ export default function App() {
                           </time>
                         </div>
                         <p className="internship-description">
-                          聚焦航运智能监控后端：在{" "}
-                          <mark className="focus-mark">船舶管理云平台</mark>
-                          负责{" "}
-                          <mark className="focus-mark">JT808 设备接入</mark>、
-                          <mark className="focus-mark">告警处理与证据留存</mark>
-                          、<mark className="focus-mark">视频回放</mark>
-                          等岸基能力；在复检云平台落地{" "}
-                          <mark className="focus-mark">自动化大模型复检</mark>
-                          ，并支持 <mark className="focus-mark">人工审核</mark>
-                          ；在 MAS
-                          推进船端告警与船岸协同。另参与面向工地场景的无感考勤，完成{" "}
-                          <mark className="focus-mark">
-                            人脸识别自动打卡
-                          </mark>、{" "}
-                          <mark className="focus-mark">
-                            陌生人标记与非法进入告警
-                          </mark>
-                          及人员、人脸数据同步。
+                          聚焦航运智能监控后端：独立开发{" "}
+                          <mark className="focus-mark">船舶管理云平台</mark>与
+                          MAS 船端告警系统，打通 JT808 设备接入、告警留证与船岸上报，
+                          实现<mark className="focus-mark">全国平台可靠投递</mark>、
+                          历史视频回放、区域围栏及定位异常告警；在复检云平台落地{" "}
+                          <mark className="focus-mark">自动化大模型复检</mark>与
+                          人工审核。另参与工地无感考勤，完成人脸自动打卡、
+                          陌生人标记、非法进入告警及人员同步。
                         </p>
                         <div className="internship-project-links">
                           {projects

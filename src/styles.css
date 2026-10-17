@@ -5619,26 +5619,38 @@ html[data-motion="off"] *:after {
   .overview-panel {
     display: grid;
     grid-template-columns: 1.18fr 0.82fr;
-    gap: 0;
-    border: 0.3mm solid #d7dfd2;
-    border-radius: 2mm;
-    overflow: hidden;
+    align-items: start;
+    gap: 2mm;
+    border: 0;
+    border-radius: 0;
+    overflow: visible;
   }
   .overview-main {
+    gap: 1.4mm;
     padding: 2.3mm 3mm;
-    border-right: 0.3mm solid #d7dfd2;
+    border: 0.3mm solid #d7dfd2;
+    border-radius: 2mm;
   }
   .overview-lead {
     margin: 0 0 1.5mm;
     font-size: 7.4pt;
     line-height: 1.4;
   }
-  .overview-main .overview-block:first-of-type,
   .overview-note {
     display: none;
   }
   .overview-block {
     margin-top: 1mm;
+    gap: 1mm;
+  }
+  .overview-project-chips {
+    gap: 1mm;
+  }
+  .overview-project-chips a {
+    flex: 0 1 auto;
+    padding: 0.7mm 1.5mm;
+    font-size: 6.1pt;
+    border-radius: 1mm;
   }
   .overview-block-label {
     display: inline-block;
@@ -5655,8 +5667,9 @@ html[data-motion="off"] *:after {
   }
   .education-card {
     padding: 2mm 2.5mm;
-    border: 0;
-    border-radius: 0;
+    height: auto;
+    border: 0.3mm solid #d7dfd2;
+    border-radius: 2mm;
     background: #f8fbf6;
   }
   .education-card-header {
@@ -5877,14 +5890,6 @@ html[data-motion="off"] *:after {
     margin: 0;
     color: #525d54;
   }
-  #project-mas {
-    break-before: page;
-    padding-top: 1mm;
-  }
-  #project-mas::before {
-    top: 1.3mm;
-  }
-
   .education-section {
     break-before: auto;
     padding-top: 3mm;
@@ -6061,5 +6066,12 @@ html[data-motion="off"] *:after {
   }
   .project-entry-header {
     padding-right: 27mm;
+  }
+  .profile-card *,
+  .resume-paper,
+  .resume-paper * {
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
   }
 }

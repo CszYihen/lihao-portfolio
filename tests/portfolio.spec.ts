@@ -165,7 +165,7 @@ test("resume content, five projects and category filtering", async ({
   ).toContainText("2026.04");
   await expect(
     page.locator("#project-mas .project-timeline-marker"),
-  ).toContainText("2026.07");
+  ).toContainText("至今");
   await expect(
     page.locator("#project-llm .project-timeline-marker"),
   ).toContainText("2026.07");
@@ -204,6 +204,9 @@ test("resume content, five projects and category filtering", async ({
   await expect(page.locator("#project-cloud89")).toContainText(
     "实时与历史视频回放",
   );
+  await expect(page.locator("#project-cloud89")).toContainText(
+    "全国平台可靠投递",
+  );
   await expect(page.locator("#project-llm")).toContainText("配置化大模型复检");
   await expect(page.locator("#project-llm")).toContainText("工厂 + 策略模式");
   await expect(page.locator("#project-llm")).toContainText(
@@ -217,6 +220,9 @@ test("resume content, five projects and category filtering", async ({
   );
   await expect(page.locator("#project-mas")).toContainText(
     "弱网下的岸基上报闭环",
+  );
+  await expect(page.locator("#project-mas")).toContainText(
+    "区域围栏与本地播报",
   );
   await expect(page.locator("#project-drama")).toContainText(
     "角色、场景与分镜工作台",
@@ -257,7 +263,10 @@ test("resume content, five projects and category filtering", async ({
     .click();
   await expect(page.locator(".project-entry")).toHaveCount(5);
   await expect(page).toHaveURL(/#project-mas$/);
-  await expect(page.locator("#project-cloud89")).toContainText("参与开发");
+  await expect(page.locator("#project-cloud89")).toContainText("独立开发");
+  await expect(
+    page.locator("#project-mas .project-timeline-marker"),
+  ).toHaveAttribute("aria-label", "定位到MAS 船端告警系统，2026年5月至今");
   await expect(page.locator("body")).not.toContainText("独立完成");
 });
 
