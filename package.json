@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "tsc -b && vite build",
+    "pdf": "node scripts/generate-resume-pdf.mjs",
     "preview": "vite preview --host 0.0.0.0",
     "check": "tsc -b",
     "test:e2e": "playwright test",

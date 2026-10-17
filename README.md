@@ -22,10 +22,10 @@ npm run dev
 - 项目图集采用图片堆叠式轮播，仅展示界面截图，支持箭头、键盘、手机横向滑动和全屏查看。
 - 图集接近视口后才加载，每个项目最多挂载当前图及后两张；桌面端仅在图集可见、页面激活且未悬停时自动切换，手机端采用手动浏览。
 - 目前共 26 张 WebP 项目图片，约 2.2 MB；图片保留完整比例，不会裁掉界面内容。
-- 阅读进度、章节进入、目录高亮、技术细节展开、图集切换等动效。
+- 阅读进度、章节进入、目录高亮、技术细节展开、图集切换等动效；背景随四个简历模块缓慢过渡配色。
 - 可关闭动效，遵循系统减少动态效果设置。
 - 邮箱复制、邮件/电话/GitHub 链接、同步版 PDF 下载。
-- “打印 / 导出”调用浏览器打印，采用两页 A4 专用排版，隐藏截图与操作按钮并保留重点技术要点；可以选择保存为 PDF。
+- 页面右上的“导出 PDF”直接下载已排版的简历，避免浏览器打印时自动加入日期、网址和页码；PDF 使用独立的精简文案与 A4 排版。
 
 ## 添加项目截图
 
@@ -63,6 +63,7 @@ cloud89: projectImagesFromGlob(cloud89Modules, "projects/cloud89", "船舶管理
 | `src/loadProjectImages.ts` | 扫描项目图片模块的工具函数             |
 | `src/styles.css`           | 布局、配色、响应式、动效、打印排版     |
 | `public/resume-lihao.pdf`  | 与网页内容同步的可下载 PDF 简历        |
+| `scripts/generate-resume-pdf.mjs` | 用构建后的页面生成无浏览器页眉页脚的 PDF |
 | `docs/CONTENT_SOURCES.md`  | 简历信息与项目源码依据                 |
 
 企业项目归入广州逐电科技有限公司实习经历；MAS 与船舶管理云平台按实际贡献标注为“独立开发”，Yihen Drama 单列为个人 GitHub 项目。未编造业务性能指标。
@@ -71,8 +72,11 @@ cloud89: projectImagesFromGlob(cloud89Modules, "projects/cloud89", "船舶管理
 
 ```powershell
 npm run build
+npm run pdf
 npm run preview
 ```
+
+修改简历内容或打印样式后先构建再执行 `npm run pdf`，把更新后的 `public/resume-lihao.pdf` 一起提交。PDF 只保留两页所需的精简项目简介；网页展示完整介绍。
 
 线上地址：[https://cszyihen.github.io/lihao-portfolio/](https://cszyihen.github.io/lihao-portfolio/)。配置支持 GitHub Pages 子目录部署。
 
@@ -87,4 +91,4 @@ npm run check
 npm run test:e2e
 ```
 
-首次测试如缺少浏览器，运行 `npx playwright install chromium`。也可设置 `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` 指向本机已有的 Chromium 测试浏览器。测试包含简历内容、项目筛选、技术展开、多图浏览、焦点、下载、复制、打印调用、动效偏好及不同屏幕宽度。
+首次测试如缺少浏览器，运行 `npx playwright install chromium`。也可设置 `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` 指向本机已有的 Chromium 测试浏览器。测试包含简历内容、项目筛选、技术展开、多图浏览、焦点、PDF 下载、复制、动效偏好及不同屏幕宽度。

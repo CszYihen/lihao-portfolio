@@ -9,7 +9,6 @@ import {
   type PointerEvent as ReactPointerEvent,
   type ReactNode,
 } from "react";
-import { flushSync } from "react-dom";
 import {
   AnimatePresence,
   MotionConfig,
@@ -37,7 +36,6 @@ import {
   GraduationCap,
   Mail,
   Phone,
-  Printer,
   Server,
   X,
 } from "lucide-react";
@@ -81,6 +79,12 @@ const navigation = [
   { id: "experience", number: "02", title: "实习经历" },
   { id: "projects", number: "03", title: "项目经历" },
   { id: "honors", number: "04", title: "学术与荣誉" },
+];
+const ambientThemes = [
+  { id: "overview", base: [242, 245, 238], accent: [214, 227, 210] },
+  { id: "experience", base: [239, 244, 240], accent: [207, 224, 215] },
+  { id: "projects", base: [238, 242, 244], accent: [205, 218, 231] },
+  { id: "honors", base: [244, 241, 236], accent: [232, 218, 199] },
 ];
 
 const easeOutExpo: [number, number, number, number] = [0.16, 1, 0.3, 1];
@@ -152,7 +156,7 @@ const projectSummaryTerms: Record<string, string[]> = {
     "岸基船舶管理平台",
     "实时位置",
     "Netty / JT808",
-    "全国平台 Kafka 出站可靠投递",
+    "事务 Outbox",
     "航行快照聚合",
     "JT1078",
     "FFmpeg / HLS",
@@ -494,7 +498,14 @@ function ProjectEntry({
           <span key={tag}>{tag}</span>
         ))}
       </div>
-      <p className="project-description">{highlightProjectSummary(project)}</p>
+      <p className="project-description">
+        <span className="project-screen-summary">
+          {highlightProjectSummary(project)}
+        </span>
+        <span className="project-print-summary">
+          {project.printSummary ?? project.summary}
+        </span>
+      </p>
       <div className={`project-body ${images.length ? "with-gallery" : ""}`}>
         <div className="project-narrative">
           <div className="project-role-label">
@@ -650,6 +661,56 @@ export default function App() {
     return () => observer.disconnect();
   }, []);
   useEffect(() => {
+    const canvas = document.querySelector<HTMLElement>(".resume-app");
+    if (!canvas) return;
+
+    if (!animated) {
+      canvas.style.removeProperty("--ambient-base");
+      canvas.style.removeProperty("--ambient-accent");
+      return;
+    }
+
+    let frame = 0;
+    const updateAmbient = () => {
+      frame = 0;
+      const position = window.scrollY;
+      const stops = ambientThemes.map((theme) => {
+        const section = document.getElementById(theme.id);
+        return {
+          ...theme,
+          start: section
+            ? section.getBoundingClientRect().top + position - window.innerHeight * 0.38
+            : 0,
+        };
+      });
+      const nextIndex = stops.findIndex((stop) => stop.start > position);
+      const lastIndex = stops.length - 1;
+      const fromIndex = nextIndex <= 0 ? 0 : nextIndex - 1;
+      const toIndex = nextIndex < 0 ? lastIndex : nextIndex;
+      const from = stops[fromIndex];
+      const to = stops[toIndex];
+      const span = to.start - from.start;
+      const progress = span > 0 ? Math.max(0, Math.min(1, (position - from.start) / span)) : 0;
+      const blend = progress * progress * (3 - 2 * progress);
+      const mix = (first: number[], second: number[]) =>
+        first.map((channel, index) => Math.round(channel + (second[index] - channel) * blend)).join(" ");
+
+      canvas.style.setProperty("--ambient-base", mix(from.base, to.base));
+      canvas.style.setProperty("--ambient-accent", mix(from.accent, to.accent));
+    };
+    const scheduleAmbient = () => {
+      if (!frame) frame = requestAnimationFrame(updateAmbient);
+    };
+    scheduleAmbient();
+    window.addEventListener("scroll", scheduleAmbient, { passive: true });
+    window.addEventListener("resize", scheduleAmbient);
+    return () => {
+      window.removeEventListener("scroll", scheduleAmbient);
+      window.removeEventListener("resize", scheduleAmbient);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, [animated]);
+  useEffect(() => {
     const revealHashProject = () => {
       const matched = window.location.hash.match(/^#project-([\w-]+)$/);
       const projectId = matched?.[1];
@@ -732,10 +793,6 @@ export default function App() {
   };
   const showAllProjects = () => {
     setFilter("all");
-  };
-  const printResume = () => {
-    flushSync(() => setFilter("all"));
-    window.print();
   };
   const filtered = projects.filter(
     (project) => filter === "all" || project.category === filter,
@@ -1002,10 +1059,14 @@ export default function App() {
                       2027 届
                     </p>
                   </div>
-                  <button className="print-button" onClick={printResume}>
-                    <Printer size={15} />
-                    <span>打印 / 导出</span>
-                  </button>
+                  <a
+                    className="print-button"
+                    href={profile.resume}
+                    download="李豪-Java后端简历.pdf"
+                  >
+                    <ArrowDownToLine size={15} />
+                    <span>导出 PDF</span>
+                  </a>
                 </div>
               </Reveal>
               <div className="mobile-section-nav" aria-label="快捷目录">

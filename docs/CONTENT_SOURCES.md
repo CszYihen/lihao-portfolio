@@ -76,7 +76,7 @@
 
 ### 业务定位与技术栈
 
-面向客船与危险品船运营企业的岸基智能监控平台，连接船端数据接入、位置上报、告警证据、告警处置及视频工作台。可用简介：“基于 Netty / JT808 对接船端终端，统一承载位置轨迹、告警证据、组织权限与视频回放；独立完成高频位置消息异步批处理、告警附件幂等留存与完整性校验，并通过 JT1078、FFmpeg / HLS 打通历史视频回放。”
+面向客船与危险品船运营企业的岸基智能监控平台，连接船端数据接入、位置上报、告警证据、告警处置及视频工作台。简历重点写高频 JT808 定位异步落库、全国平台事务 Outbox 出站可靠性，以及 JT1078 船端 NVR 历史视频的权限绑定、转码与拖动控制；不把值班和统计页面作为技术亮点。
 
 - 业务来源：`逐电89云平台/docs/PRD-客船危险品船智能监控云平台.md`；具体能力以代码为准。
 - 依赖来源：`逐电89云平台/89-cloud-platform/pom.xml`、`逐电89云平台/89-cloud-platform/platform-server/pom.xml`。
@@ -92,7 +92,6 @@
 | JT1078 历史视频回放和 HLS 转码 | `service/VideoHistoryService.java:49`；`video/history/HlsTranscodeSession.java:19` | 可说明建立回放会话、将 H.264 / H.265 裸流转为 HLS，以及拖动回放后的转码会话重置；不声称覆盖所有设备兼容性。 |
 | 全国平台 Kafka 出站可靠性 | `kafka/outbox/NationalKafkaOutboxService.java`、`NationalKafkaAfterCommitDispatcher.java`、`NationalKafkaOutboxWorker.java`、`NationalKafkaOutboxSender.java` | 事务 Outbox、提交后触发、后台补偿、异常发送状态恢复与退避重试均有实现；全国平台账号与联调验收未完成。 |
 | 航行数据聚合 | `kafka/navigate/NationalNavigateAggregateScheduler.java`；`docs/phases/M6.8-船舶航行数据.md` | 对脏船周期组装最新航行快照，减少高频位置逐条出站；本地已落地，全国平台联调待账号。 |
-| 值班、统计与视频墙 | `service/impl/DutyShiftServiceImpl.java`、`controller/DutyController.java`、`service/stat/impl/StatExcelExportServiceImpl.java`；`docs/phases/M8.1-船舶统计.md`、`M8.3-视频墙.md` | 值班台账、异常识别、统计 API/导出与视频墙 MVP 已编码；统计前端仍可切 mock，不能写成完整生产联调。 |
 
 ### 必须保留的边界
 

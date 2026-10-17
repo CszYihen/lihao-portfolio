@@ -199,13 +199,16 @@ test("resume content, five projects and category filtering", async ({
     "陌生人与非法进入告警",
   );
   await expect(page.locator("#project-cloud89")).toContainText(
-    "船舶定位与轨迹管理",
+    "高频定位异步落库",
   );
   await expect(page.locator("#project-cloud89")).toContainText(
-    "实时与历史视频回放",
+    "船端 NVR 历史视频回放",
   );
   await expect(page.locator("#project-cloud89")).toContainText(
-    "全国平台可靠投递",
+    "全国平台可靠出站",
+  );
+  await expect(page.locator("#project-cloud89")).not.toContainText(
+    "值班与运营工作台",
   );
   await expect(page.locator("#project-llm")).toContainText("配置化大模型复检");
   await expect(page.locator("#project-llm")).toContainText("工厂 + 策略模式");
@@ -443,18 +446,11 @@ test("lightbox keyboard, paging, filmstrip, zoom, focus trap and inert backgroun
   ).toBeFocused();
 });
 
-test("original PDF download, email copy, contact links and print action", async ({
+test("PDF export links, email copy and contact links", async ({
   page,
   context,
 }) => {
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
-  await page.addInitScript(() => {
-    const state = window as Window & { __printCalls?: number };
-    state.__printCalls = 0;
-    window.print = () => {
-      state.__printCalls = (state.__printCalls ?? 0) + 1;
-    };
-  });
   await page.goto("/");
   await expect(
     page.locator(".profile-contact").getByRole("link", { name: email }),
@@ -502,12 +498,14 @@ test("original PDF download, email copy, contact links and print action", async 
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(email);
   await page.getByRole("button", { name: "关闭提示" }).click();
   await expect(page.locator(".toast")).toHaveCount(0);
-  await page.getByRole("button", { name: "打印 / 导出" }).click();
-  expect(
-    await page.evaluate(
-      () => (window as Window & { __printCalls?: number }).__printCalls,
-    ),
-  ).toBe(1);
+  const exportLink = page.getByRole("link", { name: "导出 PDF" });
+  await expect(exportLink).toHaveAttribute("href", await resume.getAttribute("href"));
+  const [exportDownload] = await Promise.all([
+    page.waitForEvent("download"),
+    exportLink.click(),
+  ]);
+  expect(exportDownload.suggestedFilename()).toBe("李豪-Java后端简历.pdf");
+  expect(await exportDownload.failure()).toBeNull();
 });
 
 test("motion preference persists and paused reveals remain readable", async ({

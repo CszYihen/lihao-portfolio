@@ -112,10 +112,13 @@ p {
   box-shadow: 0 0 12px #2f6b5244;
 }
 .resume-app {
+  --ambient-base: 242 245 238;
+  --ambient-accent: 214 227 210;
   background:
-    radial-gradient(ellipse at 8% 0%, #dbe5d366 0%, transparent 42%),
-    radial-gradient(ellipse at 92% 12%, #d6dfcf3d 0%, transparent 36%),
-    var(--canvas);
+    radial-gradient(ellipse at 8% 6%, rgb(var(--ambient-accent) / 0.48) 0%, transparent 45%),
+    radial-gradient(ellipse at 92% 88%, rgb(var(--ambient-accent) / 0.26) 0%, transparent 40%),
+    rgb(var(--ambient-base));
+  background-attachment: fixed;
   min-height: 100vh;
 }
 .topbar {
@@ -626,11 +629,15 @@ p {
     border-color 0.22s var(--ease-out),
     transform 0.22s var(--ease-out);
   cursor: pointer;
+  text-decoration: none;
 }
 .print-button:hover {
   background: #f1f6ec;
   border-color: #8fb07a;
   transform: translateY(-1px);
+}
+.project-print-summary {
+  display: none;
 }
 .mobile-section-nav {
   display: none;
@@ -1991,6 +1998,9 @@ html[data-motion="off"] .link-preview-float.is-popped {
   color: var(--body);
   margin-top: 3px;
   overflow-wrap: anywhere;
+}
+.project-highlights .focus-mark {
+  padding-inline: 0;
 }
 .additional-features {
   overflow: hidden;
@@ -5491,8 +5501,8 @@ html[data-motion="off"] *:after {
   :root,
   body,
   .resume-app {
-    font-size: 8pt;
-    line-height: 1.35;
+    font-size: 9pt;
+    line-height: 1.4;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
@@ -5544,7 +5554,7 @@ html[data-motion="off"] *:after {
     margin: 0;
   }
   .profile-contact a {
-    font-size: 7.2pt;
+    font-size: 8.2pt;
     color: #33463a;
   }
   .profile-contact-row {
@@ -5576,20 +5586,19 @@ html[data-motion="off"] *:after {
     background: #4d7952;
   }
   .section-heading h2 {
-    font-size: 11pt;
+    font-size: 12pt;
     letter-spacing: -0.2pt;
   }
   .section-number {
-    font-size: 6.8pt;
+    font-size: 7.4pt;
   }
   .section-english {
-    font-size: 5.4pt;
+    font-size: 6.2pt;
     letter-spacing: 1.1pt;
   }
 
   .overview-signals {
-    gap: 1.5mm;
-    margin-bottom: 1.8mm;
+    display: none;
   }
   .overview-signals > li {
     min-height: 0;
@@ -5608,13 +5617,13 @@ html[data-motion="off"] *:after {
     height: 3.3mm;
   }
   .overview-signal-copy span {
-    font-size: 6.3pt;
+    font-size: 7.1pt;
   }
   .overview-signal-copy strong {
-    font-size: 8pt;
+    font-size: 9pt;
   }
   .overview-signal-copy small {
-    font-size: 6.4pt;
+    font-size: 7.2pt;
   }
   .overview-panel {
     display: grid;
@@ -5633,7 +5642,7 @@ html[data-motion="off"] *:after {
   }
   .overview-lead {
     margin: 0 0 1.5mm;
-    font-size: 7.4pt;
+    font-size: 8.4pt;
     line-height: 1.4;
   }
   .overview-note {
@@ -5649,13 +5658,13 @@ html[data-motion="off"] *:after {
   .overview-project-chips a {
     flex: 0 1 auto;
     padding: 0.7mm 1.5mm;
-    font-size: 6.1pt;
+    font-size: 7pt;
     border-radius: 1mm;
   }
   .overview-block-label {
     display: inline-block;
     margin-right: 2mm;
-    font-size: 6.2pt;
+    font-size: 7.1pt;
   }
   .overview-capabilities {
     display: inline-flex;
@@ -5663,7 +5672,7 @@ html[data-motion="off"] *:after {
   }
   .overview-capabilities li {
     padding: 0.6mm 1.4mm;
-    font-size: 6.3pt;
+    font-size: 7pt;
   }
   .education-card {
     padding: 2mm 2.5mm;
@@ -5680,10 +5689,10 @@ html[data-motion="off"] *:after {
     height: 5mm;
   }
   .education-card-header h3 {
-    font-size: 7.8pt;
+    font-size: 8.6pt;
   }
   .education-card-en {
-    font-size: 5pt;
+    font-size: 5.8pt;
   }
   .education-timeline {
     display: block;
@@ -5695,7 +5704,7 @@ html[data-motion="off"] *:after {
     padding-bottom: 0;
   }
   .education-heading h4 {
-    font-size: 7.5pt;
+    font-size: 8.3pt;
   }
   .education-timeline-item article {
     display: block;
@@ -5728,7 +5737,7 @@ html[data-motion="off"] *:after {
   .degree,
   .education-major,
   .edu-chip {
-    font-size: 5.9pt;
+    font-size: 6.8pt;
   }
   .education-timeline-rail {
     width: 4mm;
@@ -5756,7 +5765,7 @@ html[data-motion="off"] *:after {
   .skill-row-label,
   .skill-row > div {
     gap: 0.8mm 2mm;
-    font-size: 6.2pt;
+    font-size: 7.2pt;
   }
 
   .internship {
@@ -5778,7 +5787,7 @@ html[data-motion="off"] *:after {
     height: 4mm;
   }
   .company-line h3 {
-    font-size: 9.2pt;
+    font-size: 10.2pt;
   }
   .internship-meta {
     margin-top: 0.6mm;
@@ -5787,11 +5796,12 @@ html[data-motion="off"] *:after {
   .internship-period,
   .internship-description,
   .internship-project-links a {
-    font-size: 6.4pt;
+    font-size: 7.4pt;
   }
   .internship-description {
     margin: 1.2mm 0;
-    line-height: 1.4;
+    font-size: 7.5pt;
+    line-height: 1.42;
   }
   .internship-project-links {
     gap: 3mm;
@@ -5832,15 +5842,15 @@ html[data-motion="off"] *:after {
     height: 3.7mm;
   }
   .project-heading h3 {
-    font-size: 10.2pt;
+    font-size: 11.4pt;
     line-height: 1.15;
   }
   .project-heading h3 > span {
-    font-size: 6.6pt;
+    font-size: 7.5pt;
   }
   .project-subtitle {
     margin-top: 0.5mm;
-    font-size: 6.5pt;
+    font-size: 7.4pt;
   }
   .project-github-preview {
     font-size: 6pt;
@@ -5852,15 +5862,15 @@ html[data-motion="off"] *:after {
   }
   .project-tech > span {
     padding: 0.45mm 1.4mm;
-    font-size: 6.2pt;
+    font-size: 7pt;
     border: 0.2mm solid #ccd7c7;
     border-radius: 1mm;
     background: #f8faf7;
   }
   .project-description {
     margin: 0 0 0.8mm;
-    font-size: 7pt;
-    line-height: 1.36;
+    font-size: 8.4pt;
+    line-height: 1.42;
   }
   .project-highlights {
     display: grid;
@@ -5880,8 +5890,8 @@ html[data-motion="off"] *:after {
   .project-highlights strong,
   .project-highlights p {
     display: inline;
-    font-size: 6.8pt;
-    line-height: 1.36;
+    font-size: 7.7pt;
+    line-height: 1.42;
   }
   .project-highlights strong::after {
     content: "：";
@@ -5915,7 +5925,7 @@ html[data-motion="off"] *:after {
   .publication-heading h3,
   .honors-card-heading h3,
   .honors-block h3 {
-    font-size: 7.5pt;
+    font-size: 8.3pt;
   }
   .publication-card {
     padding: 2mm;
@@ -5932,7 +5942,7 @@ html[data-motion="off"] *:after {
   .publication-note,
   .pub-role,
   .pub-year {
-    font-size: 6.7pt;
+    font-size: 7.5pt;
   }
   .scholarship-card,
   .competition-card {
@@ -5945,7 +5955,7 @@ html[data-motion="off"] *:after {
   .honors-block li,
   .honors-block strong {
     padding: 1.5mm 2mm;
-    font-size: 6.7pt;
+    font-size: 7.5pt;
   }
   .competition-list {
     gap: 1mm;
@@ -5964,7 +5974,7 @@ html[data-motion="off"] *:after {
     font-size: 5.6pt;
   }
   .competition-title {
-    font-size: 6.2pt;
+    font-size: 7pt;
   }
   .competition-card {
     margin-top: 2mm;
@@ -5995,17 +6005,16 @@ html[data-motion="off"] *:after {
   }
   .certificates li {
     padding: 0.8mm 1.5mm;
-    font-size: 6.2pt;
+    font-size: 7.2pt;
     border-radius: 1mm;
     box-shadow: none;
   }
   .resume-footer {
-    margin-top: 2mm;
-    padding: 2mm 0 0;
+    display: none !important;
   }
   .resume-footer p,
   .resume-footer a {
-    font-size: 6.2pt;
+    font-size: 7.2pt;
   }
   .footer-label {
     font-size: 5pt;
@@ -6073,5 +6082,11 @@ html[data-motion="off"] *:after {
     opacity: 1 !important;
     filter: none !important;
     transform: none !important;
+  }
+  .project-screen-summary {
+    display: none !important;
+  }
+  .project-print-summary {
+    display: inline !important;
   }
 }
