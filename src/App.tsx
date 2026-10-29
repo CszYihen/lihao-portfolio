@@ -1059,14 +1059,6 @@ export default function App() {
                       2027 届
                     </p>
                   </div>
-                  <a
-                    className="print-button"
-                    href={profile.resume}
-                    download="李豪-Java后端简历.pdf"
-                  >
-                    <ArrowDownToLine size={15} />
-                    <span>导出 PDF</span>
-                  </a>
                 </div>
               </Reveal>
               <div className="mobile-section-nav" aria-label="快捷目录">

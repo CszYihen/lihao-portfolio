@@ -397,7 +397,7 @@ test("lightbox keyboard, paging, filmstrip, zoom, focus trap and inert backgroun
   await expect(page.locator(".resume-app")).toHaveAttribute("inert", "");
   await expect(page.locator("body")).toHaveCSS("overflow", "hidden");
   await page
-    .locator(".print-button")
+    .locator(".profile-download")
     .evaluate((element) => (element as HTMLElement).focus());
   await expect(dialog.getByRole("button", { name: "关闭图集" })).toBeFocused();
   await page.keyboard.press("ArrowRight");
@@ -498,14 +498,7 @@ test("PDF export links, email copy and contact links", async ({
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(email);
   await page.getByRole("button", { name: "关闭提示" }).click();
   await expect(page.locator(".toast")).toHaveCount(0);
-  const exportLink = page.getByRole("link", { name: "导出 PDF" });
-  await expect(exportLink).toHaveAttribute("href", await resume.getAttribute("href"));
-  const [exportDownload] = await Promise.all([
-    page.waitForEvent("download"),
-    exportLink.click(),
-  ]);
-  expect(exportDownload.suggestedFilename()).toBe("李豪-Java后端简历.pdf");
-  expect(await exportDownload.failure()).toBeNull();
+  await expect(page.getByRole("link", { name: "导出 PDF" })).toHaveCount(0);
 });
 
 test("motion preference persists and paused reveals remain readable", async ({

@@ -25,7 +25,7 @@ npm run dev
 - 阅读进度、章节进入、目录高亮、技术细节展开、图集切换等动效；纸张式正文与细网格背景随四个简历模块缓慢过渡配色。
 - 可关闭动效，遵循系统减少动态效果设置。
 - 邮箱复制、邮件/电话/GitHub 链接、同步版 PDF 下载。
-- 页面右上的“导出 PDF”直接下载已排版的简历，避免浏览器打印时自动加入日期、网址和页码；PDF 使用独立的精简文案与 A4 排版。
+- 侧栏下载单独制作的两页 A4 PDF：明确企业与个人项目，包含项目场景、技术难点及在线简历链接。
 
 ## 添加项目截图
 
@@ -62,8 +62,8 @@ cloud89: projectImagesFromGlob(cloud89Modules, "projects/cloud89", "船舶管理
 | `src/media.ts`             | 项目截图自动发现与可选标题             |
 | `src/loadProjectImages.ts` | 扫描项目图片模块的工具函数             |
 | `src/styles.css`           | 布局、配色、响应式、动效、打印排版     |
-| `public/resume-lihao.pdf`  | 与网页内容同步的可下载 PDF 简历        |
-| `scripts/generate-resume-pdf.mjs` | 用构建后的页面生成无浏览器页眉页脚的 PDF |
+| `public/resume-lihao.pdf`  | 独立排版的两页 A4 投递简历        |
+| `scripts/generate_resume_pdf.py` | 使用 ReportLab 独立绘制 PDF，不依赖网页打印样式 |
 | `docs/CONTENT_SOURCES.md`  | 简历信息与项目源码依据                 |
 
 企业项目归入广州逐电科技有限公司实习经历；MAS 与船舶管理云平台按实际贡献标注为“独立开发”，Yihen Drama 单列为个人 GitHub 项目。未编造业务性能指标。
@@ -71,12 +71,12 @@ cloud89: projectImagesFromGlob(cloud89Modules, "projects/cloud89", "船舶管理
 ## 构建与部署
 
 ```powershell
-npm run build
 npm run pdf
+npm run build
 npm run preview
 ```
 
-修改简历内容或打印样式后先构建再执行 `npm run pdf`，把更新后的 `public/resume-lihao.pdf` 一起提交。PDF 只保留两页所需的精简项目简介；网页展示完整介绍。
+PDF 内容与排版维护在 `scripts/generate_resume_pdf.py`，独立于网页。首次运行需 Python 3.9+、中文字体和 `python -m pip install "reportlab<5"`。修改 PDF 后先运行 `npm run pdf`，再构建网站，把更新后的 `public/resume-lihao.pdf` 一起提交。PDF 中的项目标题和页脚链接可打开在线简历。
 
 线上地址：[https://cszyihen.github.io/lihao-portfolio/](https://cszyihen.github.io/lihao-portfolio/)。配置支持 GitHub Pages 子目录部署。
 
