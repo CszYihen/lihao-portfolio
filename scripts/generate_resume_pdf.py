@@ -1,235 +1,208 @@
-"""Draw the application PDF as its own document, independent of browser print CSS."""
-
-from pathlib import Path
+"""Vector PDF using the website's profile sidebar and resume-paper composition."""
+import json
 import re
-
+from pathlib import Path
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 
-
 ROOT = Path(__file__).resolve().parents[1]
-OUTPUT = ROOT / "public" / "resume-lihao.pdf"
-PAGE_W, PAGE_H = A4
-LEFT, RIGHT = 43, PAGE_W - 43
-WIDTH = RIGHT - LEFT
-INK = colors.HexColor("#20372D")
-BODY = colors.HexColor("#36483E")
-MUTED = colors.HexColor("#607268")
-GREEN = colors.HexColor("#3E7554")
-RULE = colors.HexColor("#D7E2D7")
-PALE = colors.HexColor("#F3F7F2")
-ONLINE = "https://cszyihen.github.io/lihao-portfolio/"
+OUTPUT = ROOT / 'public/resume-lihao.pdf'
+W,H = A4
+L,R = 175,560
+CW = R-L
+INK='#203B2D'; BODY='#405248'; MUTED='#718071'; GREEN='#4C7945'
+LINE='#D4E0CB'; PANEL='#F4F7EF'; DARK='#1D392D'; WHITE='#FCFDF9'
+ONLINE='https://cszyihen.github.io/lihao-portfolio/'
 
-
-def register_fonts():
-    candidates = [
-        ("C:/Windows/Fonts/msyh.ttc", "C:/Windows/Fonts/msyhbd.ttc"),
-        ("C:/Windows/Fonts/NotoSansSC-VF.ttf", "C:/Windows/Fonts/simhei.ttf"),
-        ("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc", "/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc"),
-    ]
-    for regular, bold in candidates:
-        if Path(regular).exists() and Path(bold).exists():
-            pdfmetrics.registerFont(TTFont("Resume", regular))
-            pdfmetrics.registerFont(TTFont("ResumeBold", bold))
-            return
-    raise RuntimeError("需要可用的中文字体：Noto Sans SC 或微软雅黑")
-
-
-def line(c, x1, y, x2, color=RULE, width=0.7):
-    c.setStrokeColor(color)
-    c.setLineWidth(width)
-    c.line(x1, y, x2, y)
-
-
-def label(c, x, y, text, size=9, color=BODY, bold=False):
-    c.setFont("ResumeBold" if bold else "Resume", size)
-    c.setFillColor(color)
-    c.drawString(x, y, text)
-
-
-def right(c, x, y, text, size=8.5, color=MUTED, bold=False):
-    c.setFont("ResumeBold" if bold else "Resume", size)
-    c.setFillColor(color)
-    c.drawRightString(x, y, text)
-
-
-def wrap(text, width, size, bold=False):
-    font = "ResumeBold" if bold else "Resume"
-    tokens = re.findall(r"[A-Za-z0-9_+./%:-]+|\s+|.", text)
-    lines, current = [], ""
-    for token in tokens:
-        trial = current + token
-        if pdfmetrics.stringWidth(trial, font, size) <= width:
-            current = trial
+def col(value): return colors.HexColor(value)
+def text(c,x,y,s,size=8,color=BODY,bold=False):
+    c.setFillColor(col(color));c.setFont('Bold' if bold else 'Regular',size);c.drawString(x,y,s)
+def right(c,x,y,s,size=7,color=MUTED,bold=False):
+    c.setFillColor(col(color));c.setFont('Bold' if bold else 'Regular',size);c.drawRightString(x,y,s)
+def rule(c,x,y,x2,color=LINE):
+    c.setStrokeColor(col(color));c.setLineWidth(.5);c.line(x,y,x2,y)
+def box(c,x,y,w,h,fill=WHITE,stroke=LINE,r=5):
+    c.setFillColor(col(fill));c.setStrokeColor(col(stroke));c.setLineWidth(.5)
+    c.roundRect(x,y,w,h,r,fill=1,stroke=1)
+def lines(s,width,size,bold=False):
+    result=[];current='';font='Bold' if bold else 'Regular'
+    for token in re.findall(r'[A-Za-z0-9_+./%:-]+|\s+|.',s):
+        if pdfmetrics.stringWidth(current+token,font,size)<=width:current+=token
+        elif token in '，。；：！？）》】、' and current:
+            result.append(current[:-1].strip());current=current[-1:]+token
         else:
-            if token in "，。；：！？）》】、" and current.strip():
-                lines.append(current[:-1].strip())
-                current = current[-1:] + token
-                continue
-            if current.strip():
-                lines.append(current.strip())
-            current = token.lstrip()
-            while pdfmetrics.stringWidth(current, font, size) > width:
-                cut = len(current) - 1
-                while cut > 1 and pdfmetrics.stringWidth(current[:cut], font, size) > width:
-                    cut -= 1
-                lines.append(current[:cut])
-                current = current[cut:]
-    if current.strip():
-        lines.append(current.strip())
-    return lines
-
-
-def paragraph(c, x, y, text, width, size=8.8, leading=13.8, color=BODY, bold=False):
-    for part in wrap(text, width, size, bold):
-        label(c, x, y, part, size, color, bold)
-        y -= leading
+            if current.strip():result.append(current.strip())
+            current=token.lstrip()
+    if current.strip():result.append(current.strip())
+    return result
+def para(c,x,y,s,width,size=8,leading=11.2,color=BODY,bold=False):
+    for row in lines(s,width,size,bold):text(c,x,y,row,size,color,bold);y-=leading
     return y
+def heading(c,y,n,title,en):
+    text(c,L,y,n,7,GREEN,True);text(c,L+18,y-1,title,10.5,INK,True)
+    text(c,L+76,y,en,6.1,MUTED);rule(c,L,y-7,L+8,GREEN)
+    return y-18
 
+def sidebar(c,page):
+    # Same dark identity card, monogram and fine orbital rings as the HTML sidebar.
+    x=20;w=126;top=817;bottom=373
+    box(c,x,bottom,w,top-bottom,DARK,DARK,8)
+    c.saveState()
+    clip=c.beginPath();clip.roundRect(x,bottom,w,top-bottom,8);c.clipPath(clip,stroke=0)
+    c.setStrokeColor(col('#29483A'));c.setLineWidth(.35)
+    for radius in [28,42,56,70,84]:c.circle(x+36,top-133,radius,stroke=1,fill=0)
+    c.restoreState()
+    text(c,x+13,top-22,'PERSONAL PROFILE',5.5,'#A9BBA1',True)
+    box(c,x+13,top-75,34,34,'#BBD8A4','#BBD8A4',6)
+    text(c,x+20,top-65,'LH',17,DARK,True)
+    text(c,x+13,top-103,'李豪',23,'#F3F7EC',True)
+    text(c,x+76,top-101,'LI HAO',5.8,'#A9BBA1')
+    text(c,x+13,top-122,'Java 后端开发',8.3,'#C7D8BE',True)
+    box(c,x+13,top-146,98,15,'#2A4534','#405D42',7)
+    text(c,x+19,top-141,'2027 届 · 硕士在读',6.9,'#CBDDBE',True)
+    para(c,x+13,top-167,'以 Java 为核心，关注企业侧设备物联、实时业务与 AI 应用开发。',99,7.6,12,'#B5C9AF')
+    rule(c,x+13,top-214,x+w-13,'#3A5642')
+    for i,(key,value) in enumerate([('求职方向','Java 后端实习'),('当前学历','计算机技术 · 硕士'),('就读院校','燕山大学')]):
+        y=top-232-i*20;text(c,x+13,y,key,6.9,'#A3B89E');right(c,x+w-13,y,value,6.6,'#DFE8D7',True)
+    for y,s,url in [(top-307,'lihao_0216@sina.com','mailto:lihao_0216@sina.com'),(top-331,'19118415578','tel:19118415578'),(top-355,'github.com/CszYihen','https://github.com/CszYihen')]:
+        text(c,x+13,y,s,6.7,'#CADBBF');c.linkURL(url,(x+12,y-3,x+w-10,y+10),relative=0)
+    rule(c,x+13,top-371,x+w-13,'#3A5642')
+    text(c,x+13,top-390,'在线简历 · 项目截图与完整详情',6.3,'#D7E6CC',True)
+    text(c,x+13,top-407,'cszyihen.github.io/',6.8,'#BED5AD')
+    text(c,x+13,top-420,'lihao-portfolio/',6.8,'#BED5AD')
+    c.linkURL(ONLINE,(x+12,top-426,x+w-10,top-380),relative=0)
+    text(c,x+8,bottom-25,'简历目录',7,MUTED,True)
+    for i,(n,title) in enumerate([('01','专业概述'),('02','实习经历'),('03','项目经历'),('04','学术与荣誉')]):
+        y=bottom-49-i*27
+        active=(page==1 and i==0) or (page==2 and i==2)
+        if active:box(c,x+2,y-8,w-4,22,'#E4EDDF','#E4EDDF',4)
+        text(c,x+9,y,n,6.5,MUTED);text(c,x+30,y,title,7.4,GREEN if active else BODY,active)
 
-def section(c, y, number, title, en):
-    label(c, LEFT, y, number, 8, GREEN, True)
-    label(c, LEFT + 25, y - 1, title, 12, INK, True)
-    label(c, LEFT + 90, y, en.upper(), 7, MUTED)
-    line(c, LEFT, y - 9, RIGHT)
-    return y - 25
+def page_base(c,page):
+    c.setFillColor(col('#F0F4EC'));c.rect(0,0,W,H,fill=1,stroke=0)
+    c.setStrokeColor(col('#E0E8D9'));c.setLineWidth(.25)
+    for x in range(0,int(W)+1,18):c.line(x,0,x,H)
+    for y in range(0,int(H)+1,18):c.line(0,y,W,y)
+    box(c,159,19,420,798,'#DDE5D7','#DDE5D7',4)
+    box(c,157,21,420,798,WHITE,LINE,4)
+    sidebar(c,page)
+    rule(c,L,43,R)
+    text(c,L,31,'在线简历  cszyihen.github.io/lihao-portfolio/',6,MUTED)
+    c.linkURL(ONLINE,(L,26,R-25,40),relative=0)
+    right(c,R,31,f'{page} / 2',6,MUTED)
 
+def project(c,y,p):
+    personal=p['title'].startswith('Yihen');accent='#756586' if personal else GREEN
+    title=p['title'].replace(' · AI 短剧创作平台','')
+    box(c,L,y-8,20,20,'#EFEDF7' if personal else '#EAF2E1',LINE,4)
+    if personal:
+        text(c,L+4,y-1,'</>',8,accent,True)
+    else:
+        c.setStrokeColor(col(accent));c.setLineWidth(.65)
+        for offset in [0,6]:
+            c.roundRect(L+5,y-3+offset,10,4,1,fill=0,stroke=1)
+            c.circle(L+7,y-1+offset,.45,fill=1,stroke=0)
+    text(c,L+27,y,title,10.2,INK,True)
+    right(c,R,y+1,p['period'],6.3,MUTED)
+    text(c,L+27,y-12,'个人 GitHub 项目 · 开发' if personal else '逐电科技 · 企业项目开发',6.8,MUTED)
+    badge='个人项目' if personal else '企业项目'
+    box(c,R-42,y-18,42,12,'#F3F0F8' if personal else PANEL,LINE,3)
+    text(c,R-37,y-14,badge,6.3,accent,True)
+    pid='drama' if personal else {'船舶管理云平台':'cloud89','MAS 船端告警系统':'mas','大模型复检云平台':'llm','无感考勤':'attendance'}[p['title']]
+    c.linkURL(ONLINE+'#project-'+pid,(L+25,y-3,R-80,y+12),relative=0)
+    y-=27
+    x=L
+    for tag in p['tags'].split(' / '):
+        width=pdfmetrics.stringWidth(tag,'Regular',6.4)+11
+        if x+width>R:y-=14;x=L
+        box(c,x,y-3,width,12,PANEL,LINE,2);text(c,x+5,y,tag,6.4,BODY);x+=width+4
+    y-=17
+    y=para(c,L,y,p['summary'],CW,7.7,10.2)
+    y-=2
+    text(c,L,y,'项目技术要点',7.3,GREEN,True);y-=12
+    for title,detail in p['bullets']:
+        c.setFillColor(col(accent));c.circle(L+2,y+2.2,1.2,fill=1,stroke=0)
+        text(c,L+9,y,title,7.6,INK,True);y-=9.5
+        y=para(c,L+9,y,detail,CW-9,7.5,10);y-=2
+    rule(c,L,y+6,R)
+    return y-8
 
-def project(c, y, title, period, tags, summary, bullets):
-    personal = title.startswith("Yihen")
-    accent = colors.HexColor("#655575") if personal else GREEN
-    c.setFillColor(accent)
-    c.roundRect(LEFT, y - 5, 3, 17, 1.5, fill=1, stroke=0)
-    label(c, LEFT + 12, y, title, 11.1, INK, True)
-    project_id = "drama" if personal else {"船舶管理云平台": "cloud89", "MAS 船端告警系统": "mas", "大模型复检云平台": "llm", "无感考勤": "attendance"}[title]
-    title_width = pdfmetrics.stringWidth(title, "ResumeBold", 11.1)
-    c.linkURL(ONLINE + "#project-" + project_id, (LEFT + 12, y - 3, LEFT + 12 + title_width, y + 13), relative=0)
-    right(c, RIGHT, y + 1, period, 8.2, MUTED)
-    y -= 18
-    c.setFillColor(colors.HexColor("#F0EDF4") if personal else PALE)
-    c.roundRect(LEFT + 12, y - 4, 57 if personal else 44, 14, 3, fill=1, stroke=0)
-    label(c, LEFT + 17, y, "个人开源项目" if personal else "企业项目", 7.2, accent, True)
-    label(c, LEFT + (77 if personal else 65), y, tags, 7.4, MUTED)
-    y -= 17
-    y = paragraph(c, LEFT + 12, y, summary, WIDTH - 20, 8.9, 14)
-    y -= 3
-    for heading, detail in bullets:
-        c.setFillColor(GREEN)
-        c.circle(LEFT + 17, y + 3, 1.7, fill=1, stroke=0)
-        label(c, LEFT + 24, y, heading, 8.8, INK, True)
-        y -= 13
-        y = paragraph(c, LEFT + 24, y, detail, WIDTH - 33, 8.7, 13.5)
-        y -= 2
-    line(c, LEFT + 12, y + 1, RIGHT)
-    return y - 13
+def overview(c):
+    text(c,L,796,'个人简历  /  RESUME',6.5,MUTED,True)
+    text(c,L,779,'Java 后端开发实习',18,INK,True)
+    text(c,L,766,'李豪 · 燕山大学计算机技术硕士 · 2027 届',7.3,MUTED)
+    rule(c,L,757,R)
+    y=heading(c,742,'01','专业概述','PROFILE')
+    signal_w=(CW-10)/3
+    for i,(cap,title,sub) in enumerate([('学术成果','IJCAI · CCF-A','第一作者 · CCF-A 会议论文'),('实习方向','Java 后端开发','逐电科技 · 企业项目实践'),('项目重心','物联 · 告警 · AI','5 项项目 · 设备到岸基协同')]):
+        x=L+i*(signal_w+5);box(c,x,y-33,signal_w,34,PANEL,LINE,5)
+        box(c,x+7,y-22,14,14,'#E6F0DD',LINE,3)
+        text(c,x+11,y-18,str(i+1),6.3,GREEN,True)
+        text(c,x+27,y-8,cap,6.3,MUTED,True);text(c,x+27,y-18,title,7.4,INK,True);text(c,x+27,y-27,sub,5.5,MUTED)
+    y-=40
+    left_w=218;right_x=L+224;right_w=CW-224
+    box(c,L,y-94,left_w,94,WHITE,LINE,5)
+    para(c,L+9,y-14,'计算机技术硕士在读，聚焦 Java 后端与企业级物联网系统，具备设备接入、业务处理到 AI 研判的项目实践。',left_w-18,7.1,11,INK,True)
+    text(c,L+9,y-43,'重点企业项目',6.3,MUTED,True)
+    for i,t in enumerate(['船舶管理云平台','大模型复检云平台','MAS 船端告警']):
+        x=L+9+i*67;box(c,x,y-62,63,14,PANEL,LINE,3);text(c,x+4,y-57,t,5.6,GREEN,True)
+    text(c,L+9,y-74,'核心实践',6.3,MUTED,True)
+    text(c,L+9,y-88,'协议接入 · 异步编排 · 告警闭环 · 模型接入',6.5,BODY)
+    box(c,right_x,y-94,right_w,94,PANEL,LINE,5)
+    text(c,right_x+9,y-13,'教育背景',7.2,INK,True);rule(c,right_x+9,y-20,R-8)
+    c.setStrokeColor(col('#ADC69D'));c.setLineWidth(.6);c.line(right_x+10,y-33,right_x+10,y-68)
+    for offset,school,period,major in [(35,'燕山大学','2024 - 2027','硕士 · 计算机技术'),(70,'湖南理工大学','2020 - 2024','本科 · 计算机科学与技术')]:
+        c.setFillColor(col(GREEN));c.circle(right_x+10,y-offset+2,1.8,fill=1,stroke=0)
+        text(c,right_x+18,y-offset,school,7.5,INK,True);right(c,R-8,y-offset,period,5.8)
+        text(c,right_x+18,y-offset-13,major,6.5,GREEN)
+    y-=101
+    box(c,L,y-50,CW,50,PANEL,LINE,4)
+    for i,(title,items) in enumerate([('后端开发','Java · Spring Boot · Spring Cloud · MyBatis-Plus · Spring Security'),('数据中间件','MySQL · Redis · RabbitMQ · Elasticsearch · MinIO · Qdrant'),('AI 与通信','Netty / JT808 · LangChain4j · WebSocket · FFmpeg / HLS'),('工程工具','Git · Docker · Linux · Nginx · RESTful API')]):
+        yy=y-11-i*11;text(c,L+9,yy,title,6.3,GREEN,True);text(c,L+65,yy,items,6.2,BODY)
+    y=heading(c,y-63,'02','实习经历','EXPERIENCE')
+    box(c,L,y-52,CW,52,'#F0F5E9',LINE,5)
+    text(c,L+10,y-13,'广州逐电科技有限公司',8.6,INK,True);right(c,R-10,y-13,'2026.04 - 至今',6.5)
+    text(c,L+10,y-26,'Java 后端开发实习',6.7,GREEN,True)
+    para(c,L+10,y-38,'开发船舶管理云平台与 MAS 船端告警系统，打通设备接入、告警留证和岸基上报；参与大模型复检与工地无感考勤，负责核心后端链路。',CW-20,6.8,10)
+    return heading(c,y-66,'03','项目经历','PROJECTS')
 
-
-def footer(c, page):
-    line(c, LEFT, 36, RIGHT)
-    label(c, LEFT, 22, "在线简历  " + ONLINE, 7.5, MUTED)
-    c.linkURL(ONLINE, (LEFT, 17, LEFT + 265, 33), relative=0)
-    right(c, RIGHT, 22, f"LI HAO  /  {page:02d}", 7.5, MUTED)
-
+def honors(c,y):
+    y=heading(c,y,'04','学术与荣誉','HONORS')
+    pw=230;sx=L+237;sw=CW-237
+    box(c,L,y-70,pw,70,WHITE,LINE,5);text(c,L+9,y-14,'学术论文',7.5,INK,True)
+    box(c,L+9,y-35,39,13,DARK,DARK,2);text(c,L+16,y-31,'IJCAI',6.5,'#F5F8F0',True)
+    box(c,L+9,y-51,39,12,'#B99532','#B99532',2);text(c,L+16,y-47,'CCF-A',6.3,'#FFFFFF',True)
+    para(c,L+57,y-28,'Towards Generalized Action Recognition on Low-Resolutions with Domain-Invariant Representation',pw-67,6.7,9.6,INK,True)
+    text(c,L+57,y-61,'第一作者 · IJCAI 2026',6.3,GREEN)
+    c.linkURL('https://www.ijcai.org/proceedings/2026/0146.pdf',(L,y-70,L+pw,y),relative=0)
+    box(c,sx,y-70,sw,70,'#FAF7EF','#E6D9B1',5);text(c,sx+8,y-14,'奖学金',7.5,'#806724',True)
+    for i,t in enumerate(['2026 一等学业奖学金','2025 三等学业奖学金','2023 一等国家助学金','2022 国家励志奖学金']):text(c,sx+8,y-28-i*10,t,6.5,BODY)
+    y-=79
+    box(c,L,y-50,CW,50,WHITE,LINE,5);text(c,L+9,y-12,'竞赛与荣誉',7.2,INK,True)
+    for i,t in enumerate(['数维杯国际大学生数学建模挑战赛 F 奖 · 亚太地区数学建模竞赛三等奖','蓝桥杯湖南赛区 C/C++ B 组三等奖 · 中国大学生计算机设计大赛省级三等奖','2023 全国大学生数学建模竞赛湖南赛区三等奖 · 2024 届优秀毕业生']):text(c,L+9,y-24-i*10,t,6.3,BODY)
+    y-=58
+    box(c,L,y-20,CW,20,PANEL,LINE,4);text(c,L+9,y-13,'语言与证书',6.6,INK,True);text(c,L+70,y-13,'CET-6 · 全国计算机等级考试二级 · 普通话二级乙等',6.4,BODY)
+    return y-20
 
 def build():
-    register_fonts()
-    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    c = canvas.Canvas(str(OUTPUT), pagesize=A4, pageCompression=1)
-    c.setTitle("李豪 - Java 后端开发实习简历")
-    c.setAuthor("李豪")
-    c.setSubject("Java 后端开发实习申请")
+    pdfmetrics.registerFont(TTFont('Regular','C:/Windows/Fonts/msyh.ttc'))
+    pdfmetrics.registerFont(TTFont('Bold','C:/Windows/Fonts/msyhbd.ttc'))
+    projects=json.loads((ROOT/'scripts/resume_content.json').read_text(encoding='utf-8'))
+    c=canvas.Canvas(str(OUTPUT),pagesize=A4,pageCompression=1)
+    c.setTitle('李豪 - Java 后端开发实习简历');c.setAuthor('李豪')
+    page_base(c,1);y=overview(c)
+    for p in projects[:2]:y=project(c,y,p)
+    print(f'Page 1 end: {y:.1f}')
+    if y<46:raise RuntimeError('Page 1 overflow')
+    c.showPage();page_base(c,2)
+    text(c,L,802,'Java 后端开发实习 · 李豪',7.3,MUTED);rule(c,L,793,R)
+    y=heading(c,780,'03','项目经历','PROJECTS / CONTINUED')
+    for p in projects[2:]:y=project(c,y,p)
+    y=honors(c,y+1);print(f'Page 2 end: {y:.1f}')
+    if y<51:raise RuntimeError('Page 2 overflow')
+    c.save();print(f'Generated {OUTPUT}')
 
-    # Page 1 - profile, work, and the two largest maritime systems.
-    c.setFillColor(PALE)
-    c.roundRect(LEFT, 754, WIDTH, 52, 5, fill=1, stroke=0)
-    c.setFillColor(GREEN)
-    c.roundRect(LEFT, 754, 4, 52, 2, fill=1, stroke=0)
-    label(c, LEFT + 17, 779, "李豪", 23, INK, True)
-    label(c, LEFT + 89, 780, "JAVA BACKEND", 8, GREEN, True)
-    label(c, LEFT + 17, 763, "Java 后端开发实习  ·  2027 届  ·  燕山大学硕士在读", 9, BODY)
-    right(c, RIGHT - 13, 786, "19118415578  ·  lihao_0216@sina.com", 8.6, BODY)
-    right(c, RIGHT - 13, 767, "github.com/CszYihen", 8, MUTED)
-    c.linkURL("mailto:lihao_0216@sina.com", (RIGHT - 155, 780, RIGHT - 12, 798), relative=0)
-    c.linkURL("https://github.com/CszYihen", (RIGHT - 124, 761, RIGHT - 12, 776), relative=0)
-    y = section(c, 738, "01", "教育背景", "Education")
-    label(c, LEFT + 2, y, "燕山大学", 9.4, INK, True)
-    label(c, LEFT + 75, y, "计算机技术 · 硕士", 8.7)
-    right(c, RIGHT, y, "2024 - 2027", 8.4)
-    y -= 17
-    label(c, LEFT + 2, y, "湖南理工大学", 9.4, INK, True)
-    label(c, LEFT + 75, y, "计算机科学与技术 · 本科", 8.7)
-    right(c, RIGHT, y, "2020 - 2024", 8.4)
-    y = section(c, y - 26, "02", "技术能力", "Skills")
-    skill_rows = [
-        ("后端开发", "Java · Spring Boot · Spring Cloud · MyBatis-Plus · Spring Security"),
-        ("数据与消息", "MySQL · Redis · RabbitMQ · Elasticsearch · MinIO · Qdrant"),
-        ("设备与 AI", "Netty / JT808 · JT1078 · FFmpeg / HLS · LangChain4j · WebSocket"),
-        ("工程工具", "Docker · Linux · Nginx · Git · RESTful API"),
-    ]
-    for heading, items in skill_rows:
-        label(c, LEFT + 2, y, heading, 8.4, GREEN, True)
-        label(c, LEFT + 76, y, items, 8.35, BODY)
-        y -= 15
-    y = section(c, y - 8, "03", "实习经历", "Experience")
-    label(c, LEFT + 2, y, "广州逐电科技有限公司", 10.4, INK, True)
-    right(c, RIGHT, y, "2026.04 - 至今", 8.3)
-    y -= 15
-    label(c, LEFT + 2, y, "Java 后端开发实习", 8.5, GREEN, True)
-    y -= 16
-    y = paragraph(c, LEFT + 2, y, "围绕船舶智能监管，开发船舶管理云平台与 MAS 船端告警系统，打通 JT808 设备接入、告警留证与岸基上报；参与大模型复检及工地无感考勤，负责核心后端链路与可靠性设计。", WIDTH - 4, 8.65, 13.2)
-    y = section(c, y - 12, "04", "项目经历", "Engineering Projects")
-    y = project(c, y, "船舶管理云平台", "2026.08 - 至今", "Spring Boot / Netty · JT808 / Redis / FFmpeg · HLS", "面向客船与危险品船运营企业的岸基监管平台，集中呈现实时船位、历史轨迹、区域告警和图片 / 视频证据，支撑船端采集到岸基处置的业务链路。", [
-        ("高频定位接入与异步批处理", "将 JT808 高频定位从 Netty 协议线程异步移交，积批保存轨迹与最新位置，避免数据库 IO 阻塞收包线程，同时支撑实时船位和历史轨迹查询。"),
-        ("全国平台可靠出站", "事件与事务 Outbox 同库提交，提交后发送并由 Worker 兜底；以业务键去重、CAS 抢占和指数退避处理并发与失败，按船聚合位置快照。全国平台联调仍在推进。"),
-        ("证据完整性与船端视频回放", "附件按告警和文件名幂等留存并校验 SHA-256；经 JT1078 联动 NVR，以 FFmpeg / HLS 转码回放，拖动进度时重建会话并等待关键帧，避免旧流污染。"),
-    ])
-    y = project(c, y, "MAS 船端告警系统", "2026.05 - 至今", "Spring Boot / Redis / JT808 / 区域围栏", "部署在船端边缘设备，承接摄像头 AI 平台的行为、疲劳及烟火识别结果，结合任务与航行状态二次判定，完成本地留证、安全播报与岸基上报。", [
-        ("异步接入与并发告警降噪", "有界线程池承接高频推送并校验时效；Redis 滑动窗口累计有效识别，按任务和通道串行执行冷却检查、告警生成与冷却写入，抑制抖动及并发重复告警。"),
-        ("区域围栏与状态感知", "按版本幂等同步区域配置，持续判定靠近、进出及限速事件并联动音柱播报；针对定位连续缺失告警，结合靠泊状态暂停巡检计时，减少误报。"),
-        ("弱网下的上报闭环", "告警及附件经 JT808 上报；失败达到阈值后熔断退避，网络恢复时半开探测并限速补发，收到 9212 回执后更新状态、清理待确认记录。"),
-    ])
-    if y < 43:
-        raise RuntimeError(f"第一页内容超出页脚：{y:.1f}")
-    footer(c, 1)
-    c.showPage()
-
-    # Page 2 - remaining projects and evidence of research / achievement.
-    label(c, LEFT, 795, "项目经历", 18, INK, True)
-    right(c, RIGHT, 798, "LI HAO   /   JAVA BACKEND", 8, MUTED)
-    line(c, LEFT, 782, RIGHT, GREEN, 1.2)
-    y = 761
-    y = project(c, y, "大模型复检云平台", "2026.07 - 2026.08", "Spring Boot / 工厂 + 策略模式 / Redis / SSE", "面向船舶视觉告警的 AI 图片复检中台，承接上游告警图片与算法信息，自动二次研判并按需转人工审核，将结论回写上游，形成可追溯的研判链路。", [
-        ("配置化复检与多厂商模型接入", "按告警类型关联模型、提示词和结构化模板，使用工厂 + 策略模式选择调用实现；扩展厂商无需修改主流程，模型异常或超时自动降级转人工。"),
-        ("审核任务互斥与跨实例通知", "按审核员负载派发任务，以 SETNX 锁保证同一任务仅由一人处理；断开或超时后释放回池，结合 Redis Pub/Sub 与 SSE 定向通知进度和任务释放。"),
-        ("模型资源调度与追溯", "Redis 按最小负载选择 API Key，维护并发占用、失败摘除与懒恢复；留存任务、模型调用、耗时及人工修正记录，支持定位故障与分析研判结果。"),
-    ])
-    y = project(c, y, "无感考勤", "2026.04 - 2026.05", "Spring Boot / 人脸识别 / 工地考勤 / 任务同步", "连接工地人脸设备平台与考勤监管平台，利用现场抓拍完成实名人员无感打卡和进出记录；标记陌生人，识别闸机翻越及限制区域闯入等非法进入行为。", [
-        ("按业务场景分流事件", "将实名考勤、陌生人与非法进入分别接入业务链路；先校验人脸质量，再按上报间隔控制重复事件，降低监管告警噪声。"),
-        ("人员与人脸任务同步", "定时拉取监管任务，按人员资料、人脸信息分类执行；失败任务恢复为待处理，记录执行状态，便于排查同步异常。"),
-        ("图片与任务生命周期治理", "保存现场抓拍及裁剪图片，按过期策略清理历史任务和关联图片，控制存储持续增长，同时保留有效业务记录。"),
-    ])
-    y = project(c, y, "Yihen Drama · AI 短剧创作平台", "2026.01 - 2026.03", "LangChain4j / RabbitMQ / Qdrant / WebSocket", "个人 GitHub 开源项目，将小说文本逐步转换为可编辑的角色、场景、分镜与视频资产，贯通章节解析、图像生成、分镜编排与镜头视频生成流程。", [
-        ("异步章节解析与检索增强", "RabbitMQ 承接章节文本处理，提取角色与场景并向量化写入 Qdrant；生成分镜时检索人物关系及前文内容，补充长篇故事上下文。"),
-        ("多类型模型统一接入", "以工厂 + 策略模式统一文本、图像、视频、语音和向量模型，配置厂商、API Key 与任务参数，使创作步骤能够切换模型而不侵入业务流程。"),
-        ("生成任务与资产状态协同", "动态轮询第三方长耗时任务，经 WebSocket 按项目推送进度、结果及失败原因；以 MinIO 和 Elasticsearch 管理、搜索角色与场景资产。"),
-    ])
-    y = section(c, y + 1, "05", "学术与荣誉", "Research & Honors")
-    y = paragraph(c, LEFT + 2, y, "IJCAI 2026 · CCF-A 类会议论文第一作者", WIDTH - 4, 9.2, 14, INK, True)
-    y = paragraph(c, LEFT + 2, y - 1, "Towards Generalized Action Recognition on Low-Resolutions with Domain-Invariant Representation", WIDTH - 4, 8.4, 12.5, BODY)
-    c.linkURL("https://www.ijcai.org/proceedings/2026/0146.pdf", (LEFT, y + 10, RIGHT, y + 39), relative=0)
-    y -= 9
-    y = paragraph(c, LEFT + 2, y, "2026 一等学业奖学金  ·  2025 三等学业奖学金  ·  2023 一等国家助学金  ·  2022 国家励志奖学金", WIDTH - 4, 8.4, 12.5)
-    y -= 6
-    y = paragraph(c, LEFT + 2, y, "数维杯国际大学生数学建模挑战赛 F 奖；2024 届优秀毕业生；CET-6、计算机等级考试二级。", WIDTH - 4, 8.4, 12.5)
-    if y < 45:
-        raise RuntimeError(f"第二页内容超出页脚：{y:.1f}")
-    footer(c, 2)
-    c.save()
-    print(f"Generated {OUTPUT} (2 pages; page 2 content ends at {y:.1f} pt)")
-
-
-if __name__ == "__main__":
-    build()
+if __name__=='__main__':build()
